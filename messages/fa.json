@@ -1,0 +1,19 @@
+{
+  "home": {
+    "title": "به چک‌پوینت خوش آمدید",
+    "description": "پروژه Next.js App Router مستقر روی کلودفلر ورکرز با آداپتور OpenNext و پشتیبانی کامل دو زبانه فارسی و انگلیسی.",
+    "buttons": {
+      "default": "دکمه پیش‌فرض",
+      "secondary": "دکمه ثانویه",
+      "outline": "دکمه حاشیه‌دار",
+      "destructive": "دکمه تخریبی"
+    },
+    "features": {
+      "cloudflare": "کلودفلر ورکرز",
+      "opennext": "آداپتور OpenNext",
+      "shadcn": "رابط کاربری shadcn",
+      "bilingual": "پشتیبانی دوزبانه فارسی/انگلیسی"
+    },
+    "localeSwitcher": "زبان"
+  }
+}

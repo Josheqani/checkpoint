@@ -1,0 +1,19 @@
+{
+  "home": {
+    "title": "Welcome to Checkpoint",
+    "description": "Next.js App Router deployed on Cloudflare Workers via OpenNext with full bilingual Persian/English support.",
+    "buttons": {
+      "default": "Default Button",
+      "secondary": "Secondary",
+      "outline": "Outline",
+      "destructive": "Destructive"
+    },
+    "features": {
+      "cloudflare": "Cloudflare Workers",
+      "opennext": "OpenNext Adapter",
+      "shadcn": "shadcn/ui",
+      "bilingual": "Full Persian/English i18n"
+    },
+    "localeSwitcher": "Language"
+  }
+}
