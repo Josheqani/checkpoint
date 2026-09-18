@@ -3,7 +3,15 @@
 import * as React from "react";
 import * as jalaali from "jalaali-js";
 import { useLocale } from "next-intl";
-import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, X, Check } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Check,
+  RotateCcw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSettings, type CalendarType } from "@/lib/settings-context";
@@ -23,7 +31,7 @@ const JALALI_MONTHS_FA = [
 ];
 
 const JALALI_MONTHS_EN = [
-  "Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar",
+  "Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrival",
   "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"
 ];
 
@@ -65,13 +73,52 @@ export function CustomDatePicker({
   // Allow local override inside the picker
   const [localCalendar, setLocalCalendar] = React.useState<CalendarType>(globalCalendarType);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [placement, setPlacement] = React.useState<"bottom" | "top" | "modal">("bottom");
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const popoverRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     setLocalCalendar(globalCalendarType);
   }, [globalCalendarType]);
 
-  // Parse existing value or default to now
+  // Compute smart placement so the popover action buttons are never cut off by screen edges
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const updatePosition = () => {
+      if (typeof window === "undefined") return;
+
+      // Mobile screens or tight vertical heights use centered modal presentation
+      if (window.innerWidth < 640 || window.innerHeight < 620) {
+        setPlacement("modal");
+        return;
+      }
+
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const popoverHeight = withTime ? 420 : 380;
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+
+        // If not enough room below, open above
+        if (spaceBelow < popoverHeight && spaceAbove > spaceBelow) {
+          setPlacement("top");
+        } else {
+          setPlacement("bottom");
+        }
+      }
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [isOpen, withTime]);
+
+  // Parse existing value or null
   const parsedDate = React.useMemo(() => {
     if (!value) return null;
     const d = new Date(value);
@@ -124,7 +171,11 @@ export function CustomDatePicker({
   // Close when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node) &&
+        (!popoverRef.current || !popoverRef.current.contains(event.target as Node))
+      ) {
         setIsOpen(false);
       }
     };
@@ -175,9 +226,6 @@ export function CustomDatePicker({
       onChange(`${dateStr}T${timeState || "09:00"}`);
     } else {
       onChange(dateStr);
-    }
-
-    if (!withTime) {
       setIsOpen(false);
     }
   };
@@ -225,10 +273,8 @@ export function CustomDatePicker({
   const calendarGrid = React.useMemo(() => {
     if (localCalendar === "jalali") {
       const daysInMonth = jalaali.jalaaliMonthLength(viewYear, viewMonth);
-      // Day of week of 1st day of Jalali month
       const firstDayGreg = jalaali.toGregorian(viewYear, viewMonth, 1);
       const jsDay = new Date(firstDayGreg.gy, firstDayGreg.gm - 1, firstDayGreg.gd).getDay();
-      // In Iranian calendar: Saturday = 0, Sunday = 1, ..., Friday = 6
       const startOffset = (jsDay + 1) % 7;
 
       const cells: Array<{ day: number; currentMonth: boolean }> = [];
@@ -241,7 +287,7 @@ export function CustomDatePicker({
       return cells;
     } else {
       const daysInMonth = new Date(viewYear, viewMonth, 0).getDate();
-      const startOffset = new Date(viewYear, viewMonth - 1, 1).getDay(); // Sunday = 0
+      const startOffset = new Date(viewYear, viewMonth - 1, 1).getDay();
 
       const cells: Array<{ day: number; currentMonth: boolean }> = [];
       for (let i = 0; i < startOffset; i++) {
@@ -332,9 +378,167 @@ export function CustomDatePicker({
     onChange("");
   };
 
+  // Popover calendar content
+  const renderCalendarContent = () => (
+    <div className="space-y-3 select-none">
+      {/* Calendar type toggle strip */}
+      <div className="flex items-center justify-between gap-1 pb-2 border-b border-outline-variant/30">
+        <span className="text-xs text-muted-foreground font-medium">
+          {isFa ? "تقویم:" : "Calendar:"}
+        </span>
+        <div className="inline-flex rounded-full bg-surface-container p-0.5 border border-outline-variant/40 text-xs">
+          <button
+            type="button"
+            onClick={() => switchCalendar("jalali")}
+            className={cn(
+              "px-2.5 py-1 rounded-full text-xs font-medium transition-all cursor-pointer",
+              localCalendar === "jalali"
+                ? "bg-primary text-primary-foreground shadow-2xs font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {isFa ? "جلالی (شمسی)" : "Jalali"}
+          </button>
+          <button
+            type="button"
+            onClick={() => switchCalendar("gregorian")}
+            className={cn(
+              "px-2.5 py-1 rounded-full text-xs font-medium transition-all cursor-pointer",
+              localCalendar === "gregorian"
+                ? "bg-primary text-primary-foreground shadow-2xs font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {isFa ? "میلادی" : "Gregorian"}
+          </button>
+        </div>
+      </div>
+
+      {/* Month / Year header navigation */}
+      <div className="flex items-center justify-between gap-2 px-1">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 rounded-full cursor-pointer hover:bg-surface-container-highest text-foreground"
+          onClick={handlePrevMonth}
+        >
+          <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+        </Button>
+
+        <span className="font-semibold text-sm tracking-tight text-foreground">
+          {monthLabel} {viewYear}
+        </span>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 rounded-full cursor-pointer hover:bg-surface-container-highest text-foreground"
+          onClick={handleNextMonth}
+        >
+          <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+        </Button>
+      </div>
+
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {weekdays.map((wd, i) => (
+          <span
+            key={i}
+            className="text-[11px] font-semibold text-muted-foreground/80 py-1"
+          >
+            {wd}
+          </span>
+        ))}
+      </div>
+
+      {/* Days grid */}
+      <div className="grid grid-cols-7 gap-1 text-center">
+        {calendarGrid.map((cell, idx) => {
+          if (cell.day === 0) {
+            return <div key={`empty-${idx}`} className="h-8 w-8" />;
+          }
+          const selected = isDaySelected(cell.day);
+          const today = isDayToday(cell.day);
+
+          return (
+            <button
+              key={`day-${cell.day}`}
+              type="button"
+              onClick={() => handleSelectDay(cell.day)}
+              className={cn(
+                "h-8 w-8 mx-auto flex items-center justify-center rounded-full text-xs transition-all cursor-pointer",
+                selected
+                  ? "bg-primary text-primary-foreground font-bold shadow-xs scale-105"
+                  : today
+                  ? "border border-primary text-primary font-semibold hover:bg-primary/10"
+                  : "hover:bg-surface-container-highest font-normal text-foreground"
+              )}
+            >
+              {cell.day}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Time Picker section if withTime is true */}
+      {withTime && (
+        <div className="pt-3 border-t border-outline-variant/30 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+            <Clock className="w-3.5 h-3.5 text-primary" />
+            <span>{isFa ? "ساعت:" : "Time:"}</span>
+          </div>
+          <input
+            type="time"
+            value={timeState}
+            onChange={(e) => handleTimeChange(e.target.value)}
+            className="h-8 px-2.5 rounded-xl border border-outline-variant/50 bg-surface-container text-xs font-mono text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+          />
+        </div>
+      )}
+
+      {/* Footer actions */}
+      <div className="pt-2.5 border-t border-outline-variant/30 flex items-center justify-between gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleSelectToday}
+          className="h-7 text-xs rounded-full cursor-pointer px-3 border-outline-variant/40 hover:bg-surface-container"
+        >
+          {isFa ? "امروز" : "Today"}
+        </Button>
+
+        <div className="flex items-center gap-1.5">
+          {formattedDisplay && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onChange("")}
+              className="h-7 text-xs rounded-full cursor-pointer px-2 text-muted-foreground hover:text-destructive"
+            >
+              {isFa ? "پاک کردن" : "Clear"}
+            </Button>
+          )}
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setIsOpen(false)}
+            className="h-7 text-xs rounded-full cursor-pointer px-3 gap-1 bg-primary text-primary-foreground shadow-xs"
+          >
+            <Check className="w-3.5 h-3.5" />
+            <span>{isFa ? "تأیید" : "Done"}</span>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div ref={containerRef} className={cn("relative w-full", className)}>
-      {/* Trigger button */}
+      {/* Material Design 3 Input Trigger (matches standard MD3 text fields) */}
       <div
         role="button"
         tabIndex={disabled ? -1 : 0}
@@ -346,14 +550,16 @@ export function CustomDatePicker({
           }
         }}
         className={cn(
-          "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-          disabled && "cursor-not-allowed opacity-50",
+          "flex h-11 w-full items-center justify-between rounded-2xl border border-outline/50 bg-surface-container-lowest/60 px-4 py-2 text-base text-foreground transition-all duration-150 cursor-pointer select-none md:text-sm",
+          "hover:border-outline-variant hover:bg-surface-container-lowest/90",
+          "focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25",
+          isOpen && "border-primary ring-2 ring-primary/25",
+          disabled && "cursor-not-allowed opacity-40",
           !formattedDisplay && "text-muted-foreground"
         )}
       >
-        <div className="flex items-center gap-2 truncate">
-          <CalendarIcon className="w-4 h-4 shrink-0 text-primary" />
+        <div className="flex items-center gap-2.5 truncate">
+          <CalendarIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
           <span className="truncate">
             {formattedDisplay ||
               placeholder ||
@@ -366,7 +572,7 @@ export function CustomDatePicker({
             <button
               type="button"
               onClick={handleClear}
-              className="p-0.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               title={isFa ? "پاک کردن" : "Clear"}
             >
               <X className="w-3.5 h-3.5" />
@@ -375,149 +581,32 @@ export function CustomDatePicker({
         </div>
       </div>
 
-      {/* Popover dropdown */}
+      {/* Popover Presentation */}
       {isOpen && (
-        <div className="absolute z-50 top-full mt-1.5 start-0 w-[300px] sm:w-[320px] rounded-2xl border border-outline-variant/40 bg-surface-container-highest/95 p-3 shadow-xl backdrop-blur-md animate-in fade-in-0 zoom-in-95 duration-150">
-          {/* Calendar type toggle strip */}
-          <div className="flex items-center justify-between gap-1 pb-2 mb-2 border-b border-outline-variant/30">
-            <span className="text-xs text-muted-foreground font-medium">
-              {isFa ? "نوع تقویم:" : "Calendar:"}
-            </span>
-            <div className="inline-flex rounded-full bg-surface-container p-0.5 border border-outline-variant/30 text-xs">
-              <button
-                type="button"
-                onClick={() => switchCalendar("jalali")}
-                className={cn(
-                  "px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors cursor-pointer",
-                  localCalendar === "jalali"
-                    ? "bg-primary text-primary-foreground shadow-2xs"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
+        <>
+          {placement === "modal" ? (
+            /* Centered Modal Backdrop on Mobile or tight screens */
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in-0 duration-150">
+              <div
+                ref={popoverRef}
+                className="w-full max-w-[330px] rounded-3xl border border-outline-variant/30 bg-surface-container-high p-4 shadow-2xl animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto"
               >
-                {isFa ? "جلالی (شمسی)" : "Jalali"}
-              </button>
-              <button
-                type="button"
-                onClick={() => switchCalendar("gregorian")}
-                className={cn(
-                  "px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors cursor-pointer",
-                  localCalendar === "gregorian"
-                    ? "bg-primary text-primary-foreground shadow-2xs"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {isFa ? "میلادی" : "Gregorian"}
-              </button>
-            </div>
-          </div>
-
-          {/* Month / Year header navigation */}
-          <div className="flex items-center justify-between gap-2 mb-3 px-1">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 rounded-full cursor-pointer"
-              onClick={handlePrevMonth}
-            >
-              <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-            </Button>
-
-            <span className="font-semibold text-sm select-none">
-              {monthLabel} {viewYear}
-            </span>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 rounded-full cursor-pointer"
-              onClick={handleNextMonth}
-            >
-              <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
-            </Button>
-          </div>
-
-          {/* Weekday headers */}
-          <div className="grid grid-cols-7 gap-1 text-center mb-1">
-            {weekdays.map((wd, i) => (
-              <span
-                key={i}
-                className="text-[11px] font-semibold text-muted-foreground/80 py-0.5 select-none"
-              >
-                {wd}
-              </span>
-            ))}
-          </div>
-
-          {/* Days grid */}
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {calendarGrid.map((cell, idx) => {
-              if (cell.day === 0) {
-                return <div key={`empty-${idx}`} className="h-8" />;
-              }
-              const selected = isDaySelected(cell.day);
-              const today = isDayToday(cell.day);
-
-              return (
-                <button
-                  key={`day-${cell.day}`}
-                  type="button"
-                  onClick={() => handleSelectDay(cell.day)}
-                  className={cn(
-                    "h-8 w-8 mx-auto flex items-center justify-center rounded-full text-xs transition-all cursor-pointer",
-                    selected
-                      ? "bg-primary text-primary-foreground font-bold shadow-xs scale-105"
-                      : today
-                      ? "border border-primary text-primary font-semibold hover:bg-primary/10"
-                      : "hover:bg-surface-container font-normal text-foreground"
-                  )}
-                >
-                  {cell.day}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Time Picker section if withTime is true */}
-          {withTime && (
-            <div className="mt-3 pt-3 border-t border-outline-variant/30 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Clock className="w-3.5 h-3.5 text-primary" />
-                <span>{isFa ? "ساعت:" : "Time:"}</span>
+                {renderCalendarContent()}
               </div>
-              <input
-                type="time"
-                value={timeState}
-                onChange={(e) => handleTimeChange(e.target.value)}
-                className="h-8 px-2 rounded-md border border-input bg-surface-container text-xs font-mono text-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
+            </div>
+          ) : (
+            /* Desktop Popover: flips top or bottom based on available screen space */
+            <div
+              ref={popoverRef}
+              className={cn(
+                "absolute z-50 start-0 w-[310px] sm:w-[330px] rounded-3xl border border-outline-variant/40 bg-surface-container-high p-3.5 shadow-2xl backdrop-blur-md animate-in fade-in-0 zoom-in-95 duration-150",
+                placement === "top" ? "bottom-full mb-2" : "top-full mt-2"
+              )}
+            >
+              {renderCalendarContent()}
             </div>
           )}
-
-          {/* Footer actions */}
-          <div className="mt-3 pt-2.5 border-t border-outline-variant/30 flex items-center justify-between gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleSelectToday}
-              className="h-7 text-xs rounded-full cursor-pointer px-2.5"
-            >
-              {isFa ? "امروز" : "Today"}
-            </Button>
-
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-              className="h-7 text-xs rounded-full cursor-pointer px-3 gap-1"
-            >
-              <Check className="w-3 h-3" />
-              <span>{isFa ? "تأیید" : "Done"}</span>
-            </Button>
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
