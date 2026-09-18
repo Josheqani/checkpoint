@@ -100,11 +100,6 @@ export function ThemeProvider({
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}")||"${defaultTheme}";var d=t==="dark"||(t==="system"&&window.matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.classList.add("dark")}else{document.documentElement.classList.remove("dark")}}catch(e){}})();`,
-        }}
-      />
       {children}
     </ThemeContext.Provider>
   );

@@ -103,6 +103,13 @@ export default async function RootLayout({
           : `${geistSans.className} ${geistSans.variable} ${geistMono.variable}`
       }
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("checkpoint-theme")||"system";var d=t==="dark"||(t==="system"&&window.matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.classList.add("dark")}else{document.documentElement.classList.remove("dark")}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-background text-foreground antialiased flex flex-col selection:bg-primary-container selection:text-on-primary-container">
         <ThemeProvider
           attribute="class"
@@ -110,8 +117,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SettingsProvider>
-            <NextIntlClientProvider locale={locale} messages={messages}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <SettingsProvider locale={locale}>
               <header className="w-full border-b border-outline-variant/30 bg-surface/85 backdrop-blur-md sticky top-0 z-50 transition-shadow">
                 <div className="max-w-5xl mx-auto flex items-center justify-between p-3.5 sm:px-6 gap-2 sm:gap-4">
                   <div className="flex items-center gap-3 sm:gap-6">
@@ -136,8 +143,8 @@ export default async function RootLayout({
               <main className="flex-1 flex flex-col pb-20 sm:pb-8">{children}</main>
               {isLoggedIn && <MobileNav />}
               <Toaster />
-            </NextIntlClientProvider>
-          </SettingsProvider>
+            </SettingsProvider>
+          </NextIntlClientProvider>
         </ThemeProvider>
       </body>
     </html>

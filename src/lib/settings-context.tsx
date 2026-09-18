@@ -24,9 +24,22 @@ const SettingsContext = React.createContext<SettingsContextType>({
 export const CALENDAR_STORAGE_KEY = "checkpoint_calendar_type";
 export const DEFAULT_PHONE_STORAGE_KEY = "checkpoint_default_phone";
 
-export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  const locale = useLocale();
-  const defaultCalendar: CalendarType = locale === "fa" ? "jalali" : "gregorian";
+export function SettingsProvider({
+  children,
+  locale: propLocale,
+}: {
+  children: React.ReactNode;
+  locale?: string;
+}) {
+  let activeLocale = propLocale || "fa";
+  try {
+    const intlLocale = useLocale();
+    if (intlLocale) activeLocale = intlLocale;
+  } catch {
+    // Graceful fallback if rendered outside NextIntlClientProvider
+  }
+
+  const defaultCalendar: CalendarType = activeLocale === "fa" ? "jalali" : "gregorian";
 
   const [calendarType, setCalendarTypeState] = React.useState<CalendarType>(defaultCalendar);
   const [defaultPhoneNumber, setDefaultPhoneNumberState] = React.useState<string>("");
