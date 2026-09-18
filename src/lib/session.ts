@@ -1,3 +1,5 @@
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 export interface SessionPayload {
   username: string;
   exp: number; // unix timestamp in ms
@@ -5,6 +7,18 @@ export interface SessionPayload {
 
 export const SESSION_COOKIE_NAME = "checkpoint_session";
 export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
+
+export function getSessionSecret(): string {
+  try {
+    const { env } = getCloudflareContext();
+    if (env.SESSION_SECRET) {
+      return env.SESSION_SECRET;
+    }
+  } catch {
+    // Fallback for environments outside Cloudflare context
+  }
+  return process.env.SESSION_SECRET || "";
+}
 
 function uint8ArrayToBase64Url(bytes: Uint8Array): string {
   let binary = "";
