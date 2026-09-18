@@ -6,6 +6,7 @@ import { Plus, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GoalCard } from "@/components/goals/goal-card";
 import { EmptyGoals } from "@/components/goals/empty-goals";
+import { GoalDialog } from "@/components/goals/goal-dialog";
 import type { GoalWithReminders } from "@/types/goal";
 
 export default function GoalsPage() {
@@ -14,6 +15,10 @@ export default function GoalsPage() {
   const [goals, setGoals] = useState<GoalWithReminders[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Goal Form dialog state (create / edit)
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<GoalWithReminders | null>(null);
 
   const fetchGoals = useCallback(async () => {
     setLoading(true);
@@ -43,19 +48,19 @@ export default function GoalsPage() {
     fetchGoals();
   }, [fetchGoals]);
 
+  const handleCreateOpen = () => {
+    setSelectedGoal(null);
+    setIsFormOpen(true);
+  };
+
   const handleEdit = (goal: GoalWithReminders) => {
-    // Handled in stage 3
-    console.log("Edit goal:", goal);
+    setSelectedGoal(goal);
+    setIsFormOpen(true);
   };
 
   const handleDelete = (goal: GoalWithReminders) => {
     // Handled in stage 4
     console.log("Delete goal:", goal);
-  };
-
-  const handleCreateOpen = () => {
-    // Handled in stage 3
-    console.log("Open create dialog");
   };
 
   return (
@@ -104,6 +109,13 @@ export default function GoalsPage() {
           ))}
         </div>
       )}
+
+      <GoalDialog
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        goal={selectedGoal}
+        onSaved={fetchGoals}
+      />
     </div>
   );
 }
