@@ -75,5 +75,85 @@
       "updateError": "Failed to update goal",
       "deleteError": "Failed to delete goal"
     }
+  },
+  "reminders": {
+    "title": "Reminders",
+    "subtitle": "Configure SMS reminder schedules for this goal",
+    "addReminder": "Add Reminder",
+    "emptyTitle": "No reminders yet",
+    "emptyDescription": "Set up automated SMS reminders so you never miss a checkpoint.",
+    "addFirstReminder": "Add your first reminder",
+    "backToGoals": "Back to Goals",
+    "active": "Active",
+    "inactive": "Inactive",
+    "schedule": {
+      "once": "Once on {date} at {time}",
+      "every": "Every {days} at {time}",
+      "everyday": "Every day at {time}",
+      "onceType": "One-time",
+      "recurringType": "Recurring"
+    },
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday",
+      "short": {
+        "0": "Sun",
+        "1": "Mon",
+        "2": "Tue",
+        "3": "Wed",
+        "4": "Thu",
+        "5": "Fri",
+        "6": "Sat"
+      }
+    },
+    "form": {
+      "createTitle": "Add Reminder",
+      "createDescription": "Set up an SMS alert schedule for this goal.",
+      "editTitle": "Edit Reminder",
+      "editDescription": "Update your reminder schedule or phone number.",
+      "phoneLabel": "Mobile Number",
+      "phonePlaceholder": "09123456789",
+      "phoneHint": "Iranian mobile format (09XXXXXXXXX or +989XXXXXXXXX)",
+      "scheduleTypeLabel": "Schedule Type",
+      "onceOption": "One-time",
+      "recurringOption": "Recurring",
+      "dateTimeLabel": "Date & Time",
+      "daysOfWeekLabel": "Days of the Week",
+      "timeLabel": "Time",
+      "activeLabel": "Active",
+      "cancel": "Cancel",
+      "createButton": "Add Reminder",
+      "creatingButton": "Adding...",
+      "saveButton": "Save Changes",
+      "savingButton": "Saving...",
+      "errors": {
+        "phoneInvalid": "Enter a valid Iranian mobile number (09XXXXXXXXX)",
+        "dateRequired": "Date and time are required for one-time reminders",
+        "dateFuture": "Scheduled date must be in the future",
+        "daysRequired": "Select at least one day of the week",
+        "timeRequired": "Time is required (e.g. 09:00)"
+      }
+    },
+    "deleteDialog": {
+      "title": "Delete Reminder",
+      "description": "Are you sure you want to delete this reminder?",
+      "confirm": "Delete",
+      "deleting": "Deleting..."
+    },
+    "toast": {
+      "created": "Reminder added successfully",
+      "updated": "Reminder updated successfully",
+      "deleted": "Reminder deleted successfully",
+      "statusUpdated": "Reminder status updated",
+      "createError": "Failed to add reminder",
+      "updateError": "Failed to update reminder",
+      "deleteError": "Failed to delete reminder",
+      "toggleError": "Failed to update status"
+    }
   }
 }

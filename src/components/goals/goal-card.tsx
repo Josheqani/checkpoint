@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Bell, Calendar, Clock, Pencil, Trash2 } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/routing";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { GoalWithReminders } from "@/types/goal";
@@ -47,7 +48,12 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
       <CardHeader className="space-y-3 pb-3">
         <div className="flex items-start justify-between gap-3">
           <CardTitle className="text-lg font-semibold leading-snug break-words">
-            {goal.title}
+            <Link
+              href={`/goals/${goal.id}`}
+              className="hover:text-primary transition-colors hover:underline"
+            >
+              {goal.title}
+            </Link>
           </CardTitle>
           <Badge
             variant={goal.activeRemindersCount > 0 ? "default" : "secondary"}
