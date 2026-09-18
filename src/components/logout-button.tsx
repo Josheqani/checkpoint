@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 
 export function LogoutButton() {
   const [isPending, startTransition] = useTransition();
@@ -32,7 +32,7 @@ export function LogoutButton() {
       disabled={isPending}
       className="flex items-center gap-1.5 rounded-full h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-foreground/5 cursor-pointer transition-colors"
     >
-      <LogOut className="w-3.5 h-3.5 rtl:rotate-180" />
+      <Icon name="logout" size="xs" className="rtl:rotate-180" />
       <span>{t("logoutButton")}</span>
     </Button>
   );

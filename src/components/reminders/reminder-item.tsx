@@ -1,10 +1,10 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Clock, Calendar, Repeat, Pencil, Trash2, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Icon } from "@/components/ui/icon";
 import { formatScheduleSummary } from "@/lib/format-schedule";
 import type { ReminderItem } from "@/types/reminder";
 
@@ -31,7 +31,7 @@ export function ReminderItemCard({
       <div className="space-y-2">
         <div className="flex items-center gap-2.5 flex-wrap">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-foreground border border-outline-variant/40 font-mono text-xs font-semibold tracking-wide">
-            <Phone className="w-3 h-3 text-muted-foreground" />
+            <Icon name="call" size="xs" className="text-muted-foreground" />
             <span dir="ltr">{reminder.phoneNumber}</span>
           </div>
 
@@ -41,12 +41,12 @@ export function ReminderItemCard({
           >
             {reminder.scheduleType === "recurring" ? (
               <>
-                <Repeat className="w-3 h-3" />
+                <Icon name="repeat" size="xs" />
                 <span>{t("reminders.schedule.recurringType")}</span>
               </>
             ) : (
               <>
-                <Calendar className="w-3 h-3" />
+                <Icon name="calendar_today" size="xs" />
                 <span>{t("reminders.schedule.onceType")}</span>
               </>
             )}
@@ -54,7 +54,7 @@ export function ReminderItemCard({
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="w-4 h-4 shrink-0 text-primary" />
+          <Icon name="schedule" size="xs" className="text-primary" />
           <span>{summary}</span>
         </div>
       </div>
@@ -89,7 +89,7 @@ export function ReminderItemCard({
             className="h-8 w-8 rounded-full p-0 cursor-pointer text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
             title={t("goals.edit")}
           >
-            <Pencil className="w-3.5 h-3.5" />
+            <Icon name="edit" size="xs" />
             <span className="sr-only">{t("goals.edit")}</span>
           </Button>
 
@@ -100,7 +100,7 @@ export function ReminderItemCard({
             className="h-8 w-8 rounded-full p-0 cursor-pointer text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
             title={t("goals.delete")}
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Icon name="delete" size="xs" />
             <span className="sr-only">{t("goals.delete")}</span>
           </Button>
         </div>

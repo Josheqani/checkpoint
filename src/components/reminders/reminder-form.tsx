@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Loader2, Calendar, Repeat } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { iranianPhoneRegex } from "@/lib/validations/reminder";
 import type { ReminderItem, RecurrencePattern } from "@/types/reminder";
 
@@ -244,19 +244,19 @@ export function ReminderForm({
             <Button
               type="button"
               variant={scheduleType === "once" ? "default" : "outline"}
-              className="gap-2 cursor-pointer"
+              className="gap-2 cursor-pointer rounded-full h-11"
               onClick={() => form.setValue("scheduleType", "once")}
             >
-              <Calendar className="w-4 h-4" />
+              <Icon name="calendar_today" size="sm" />
               <span>{t("form.onceOption")}</span>
             </Button>
             <Button
               type="button"
               variant={scheduleType === "recurring" ? "default" : "outline"}
-              className="gap-2 cursor-pointer"
+              className="gap-2 cursor-pointer rounded-full h-11"
               onClick={() => form.setValue("scheduleType", "recurring")}
             >
-              <Repeat className="w-4 h-4" />
+              <Icon name="repeat" size="sm" />
               <span>{t("form.recurringOption")}</span>
             </Button>
           </div>
@@ -378,7 +378,7 @@ export function ReminderForm({
           <Button type="submit" disabled={submitting} className="cursor-pointer">
             {submitting ? (
               <>
-                <Loader2 className="w-4 h-4 me-2 animate-spin" />
+                <Icon name="progress_activity" size="sm" className="me-2 animate-spin" />
                 <span>
                   {isEditing
                     ? t("form.savingButton")

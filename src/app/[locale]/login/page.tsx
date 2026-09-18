@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Lock, User, AlertCircle, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -58,7 +58,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md rounded-[28px] bg-surface-container-low border border-outline-variant/40 p-2 sm:p-4 shadow-xs">
         <CardHeader className="space-y-2 text-center pb-4">
           <div className="w-16 h-16 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center mx-auto mb-2 shadow-xs">
-            <Lock className="w-7 h-7" />
+            <Icon name="lock" size="lg" fill />
           </div>
           <CardTitle className="text-2xl font-normal tracking-normal text-foreground">
             {t("loginTitle")}
@@ -71,7 +71,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="p-3.5 rounded-2xl bg-destructive/15 text-destructive text-sm flex items-center gap-2.5">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+                <Icon name="error" size="sm" className="text-destructive shrink-0" />
                 <span>{error}</span>
               </div>
             )}
@@ -81,7 +81,11 @@ export default function LoginPage() {
                 {t("usernameLabel")}
               </Label>
               <div className="relative">
-                <User className="absolute start-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Icon
+                  name="person"
+                  size="sm"
+                  className="absolute start-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                />
                 <Input
                   id="username"
                   name="username"
@@ -101,7 +105,11 @@ export default function LoginPage() {
                 {t("passwordLabel")}
               </Label>
               <div className="relative">
-                <Lock className="absolute start-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Icon
+                  name="lock"
+                  size="sm"
+                  className="absolute start-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                />
                 <Input
                   id="password"
                   name="password"
@@ -124,7 +132,7 @@ export default function LoginPage() {
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 me-2 animate-spin" />
+                  <Icon name="progress_activity" size="sm" className="me-2 animate-spin" />
                   <span>{t("signingIn")}</span>
                 </>
               ) : (

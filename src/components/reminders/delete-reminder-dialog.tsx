@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { AlertTriangle, Loader2, Phone, Clock } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { formatScheduleSummary } from "@/lib/format-schedule";
 import type { ReminderItem } from "@/types/reminder";
 
@@ -63,7 +63,7 @@ export function DeleteReminderDialog({
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 shrink-0" />
+            <Icon name="warning" size="sm" className="text-destructive shrink-0" fill />
             <span>{t("reminders.deleteDialog.title")}</span>
           </DialogTitle>
           <DialogDescription className="pt-2 text-foreground/90">
@@ -73,11 +73,11 @@ export function DeleteReminderDialog({
 
         <div className="p-3.5 rounded-2xl bg-surface-container border border-outline-variant/40 space-y-2 text-sm">
           <div className="flex items-center gap-2 font-mono">
-            <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+            <Icon name="call" size="xs" className="text-muted-foreground" />
             <span dir="ltr">{reminder.phoneNumber}</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground text-xs">
-            <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
+            <Icon name="schedule" size="xs" className="text-primary shrink-0" />
             <span>{summary}</span>
           </div>
         </div>
@@ -101,7 +101,7 @@ export function DeleteReminderDialog({
           >
             {deleting ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Icon name="progress_activity" size="sm" className="animate-spin" />
                 <span>{t("reminders.deleteDialog.deleting")}</span>
               </>
             ) : (

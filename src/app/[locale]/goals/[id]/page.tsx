@@ -3,19 +3,10 @@
 import { useEffect, useState, useCallback, use } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Plus,
-  Loader2,
-  AlertCircle,
-  Calendar,
-  Clock,
-  Bell,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Fab } from "@/components/ui/fab";
+import { Icon } from "@/components/ui/icon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ReminderItemCard } from "@/components/reminders/reminder-item";
@@ -170,11 +161,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
       <div>
         <Button variant="ghost" size="sm" asChild className="gap-2 -ms-2 rounded-full text-foreground/80 hover:text-foreground hover:bg-foreground/5 cursor-pointer">
           <Link href="/goals">
-            {isRtl ? (
-              <ArrowRight className="w-4 h-4" />
-            ) : (
-              <ArrowLeft className="w-4 h-4" />
-            )}
+            <Icon name={isRtl ? "arrow_forward" : "arrow_back"} size="sm" />
             <span>{t("reminders.backToGoals")}</span>
           </Link>
         </Button>
@@ -182,13 +169,13 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <Icon name="progress_activity" size="lg" className="animate-spin text-primary" />
           <p className="text-sm">{t("goals.loading")}</p>
         </div>
       ) : error || !goal ? (
         <div className="p-6 rounded-[28px] border border-destructive/25 bg-destructive/10 text-center space-y-3">
           <div className="flex items-center justify-center gap-2 text-destructive font-medium">
-            <AlertCircle className="w-5 h-5" />
+            <Icon name="error" size="sm" />
             <span>{error || t("goals.fetchError")}</span>
           </div>
           <Button variant="outline" size="sm" onClick={fetchData} className="rounded-full cursor-pointer">
@@ -212,7 +199,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
                   }
                   className="shrink-0 gap-1.5 text-xs font-medium self-start"
                 >
-                  <Bell className="w-3.5 h-3.5" />
+                  <Icon name="notifications" size="xs" fill />
                   <span>
                     {t("goals.activeReminders", {
                       count: reminders.filter((r) => r.isActive).length,
@@ -230,7 +217,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
 
               <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-3 border-t border-outline-variant/30">
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-muted-foreground/80" />
+                  <Icon name="calendar_today" size="xs" className="text-muted-foreground/80 shrink-0" />
                   <span>
                     <span className="font-medium text-foreground/80">
                       {t("goals.targetDate")}:
@@ -240,7 +227,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-muted-foreground/80" />
+                  <Icon name="schedule" size="xs" className="text-muted-foreground/80 shrink-0" />
                   <span>
                     <span className="font-medium text-foreground/80">
                       {t("goals.created")}:
@@ -273,7 +260,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
                 onClick={handleAddReminder}
                 className="gap-2 rounded-full h-10 px-5 shrink-0 cursor-pointer shadow-xs hover:shadow-sm"
               >
-                <Plus className="w-4 h-4" />
+                <Icon name="add" size="sm" />
                 <span>{t("reminders.addReminder")}</span>
               </Button>
             </div>
@@ -304,7 +291,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
               aria-label={t("reminders.addReminder")}
               className="shadow-lg hover:shadow-xl active:shadow-md"
             >
-              <Plus className="w-6 h-6" />
+              <Icon name="add" size="md" />
             </Fab>
           </div>
         </>
