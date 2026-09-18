@@ -9,6 +9,7 @@ import { GoalCard } from "@/components/goals/goal-card";
 import { EmptyGoals } from "@/components/goals/empty-goals";
 import { GoalDialog } from "@/components/goals/goal-dialog";
 import { DeleteGoalDialog } from "@/components/goals/delete-goal-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DashboardSummaryStrip,
   type DashboardStats,
@@ -121,9 +122,23 @@ export default function GoalsPage() {
       <DashboardSummaryStrip stats={stats} loading={statsLoading} />
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm">{t("loading")}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="rounded-3xl bg-surface-container-low border border-outline-variant/30 p-5 space-y-4"
+            >
+              <div className="flex justify-between items-start gap-4">
+                <Skeleton className="h-6 w-3/4 rounded-xl" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <div className="pt-3 border-t border-outline-variant/20 space-y-2">
+                <Skeleton className="h-4 w-1/2 rounded-md" />
+                <Skeleton className="h-4 w-1/3 rounded-md" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="p-6 rounded-[28px] border border-destructive/25 bg-destructive/10 text-center space-y-3">

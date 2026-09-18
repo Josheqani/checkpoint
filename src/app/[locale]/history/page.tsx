@@ -25,6 +25,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface SentLogItem {
   id: string;
@@ -151,9 +152,19 @@ export default function HistoryPage() {
 
       {/* Main Content */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 text-muted-foreground gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm">{t("loading")}</p>
+        <div className="rounded-3xl border border-outline-variant/30 bg-surface-container-low p-6 space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between gap-4 py-3 border-b border-outline-variant/15 last:border-0"
+            >
+              <Skeleton className="h-5 w-1/4 rounded-lg" />
+              <Skeleton className="h-4 w-1/6 rounded-lg hidden sm:block" />
+              <Skeleton className="h-4 w-1/5 rounded-lg" />
+              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton className="h-4 w-1/6 rounded-lg hidden md:block" />
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="p-6 rounded-[28px] border border-destructive/25 bg-destructive/10 text-center space-y-3">

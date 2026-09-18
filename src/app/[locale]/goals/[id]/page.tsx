@@ -22,6 +22,7 @@ import { ReminderItemCard } from "@/components/reminders/reminder-item";
 import { EmptyReminders } from "@/components/reminders/empty-reminders";
 import { ReminderDialog } from "@/components/reminders/reminder-dialog";
 import { DeleteReminderDialog } from "@/components/reminders/delete-reminder-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { GoalWithReminders } from "@/types/goal";
 import type { ReminderItem } from "@/types/reminder";
 
@@ -181,9 +182,32 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm">{t("goals.loading")}</p>
+        <div className="space-y-6">
+          <div className="rounded-3xl bg-surface-container-low border border-outline-variant/30 p-6 space-y-4">
+            <div className="flex justify-between items-start gap-4">
+              <Skeleton className="h-8 w-1/2 rounded-xl" />
+              <Skeleton className="h-6 w-24 rounded-full" />
+            </div>
+            <Skeleton className="h-12 w-full rounded-xl" />
+            <div className="pt-3 border-t border-outline-variant/20 flex gap-6">
+              <Skeleton className="h-4 w-32 rounded-md" />
+              <Skeleton className="h-4 w-32 rounded-md" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                className="rounded-2xl bg-surface-container-low border border-outline-variant/30 p-4 space-y-3"
+              >
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-5 w-48 rounded-lg" />
+                  <Skeleton className="h-6 w-12 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-36 rounded-md" />
+              </div>
+            ))}
+          </div>
         </div>
       ) : error || !goal ? (
         <div className="p-6 rounded-[28px] border border-destructive/25 bg-destructive/10 text-center space-y-3">
