@@ -15,5 +15,16 @@
       "bilingual": "پشتیبانی دوزبانه فارسی/انگلیسی"
     },
     "localeSwitcher": "زبان"
+  },
+  "auth": {
+    "loginTitle": "ورود به سیستم",
+    "loginDescription": "برای دسترسی به چک‌پوینت مشخصات خود را وارد کنید",
+    "usernameLabel": "نام کاربری",
+    "passwordLabel": "رمز عبور",
+    "signInButton": "ورود",
+    "signingIn": "در حال ورود...",
+    "logoutButton": "خروج",
+    "invalidCredentials": "نام کاربری یا رمز عبور اشتباه است",
+    "errorOccurred": "خطایی رخ داد. لطفاً دوباره تلاش کنید."
   }
 }

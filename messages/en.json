@@ -15,5 +15,16 @@
       "bilingual": "Full Persian/English i18n"
     },
     "localeSwitcher": "Language"
+  },
+  "auth": {
+    "loginTitle": "Sign In",
+    "loginDescription": "Enter your credentials to access Checkpoint",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "signInButton": "Sign In",
+    "signingIn": "Signing in...",
+    "logoutButton": "Log Out",
+    "invalidCredentials": "Invalid username or password",
+    "errorOccurred": "An error occurred. Please try again."
   }
 }

@@ -4,8 +4,15 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { routing } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { LogoutButton } from "@/components/logout-button";
+import {
+  SESSION_COOKIE_NAME,
+  getSessionSecret,
+  verifySessionToken,
+} from "@/lib/session";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -60,6 +67,14 @@ export default async function RootLayout({
   const messages = await getMessages();
   const isFa = locale === "fa";
 
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const secret = getSessionSecret();
+  const { valid: isLoggedIn } = await verifySessionToken(
+    sessionCookie || "",
+    secret
+  );
+
   return (
     <html
       lang={locale}
@@ -78,7 +93,10 @@ export default async function RootLayout({
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />
                 <span>{isFa ? "چک‌پوینت" : "Checkpoint"}</span>
               </div>
-              <LocaleSwitcher />
+              <div className="flex items-center gap-3">
+                <LocaleSwitcher />
+                {isLoggedIn && <LogoutButton />}
+              </div>
             </div>
           </header>
           <main className="flex-1 flex flex-col">{children}</main>
