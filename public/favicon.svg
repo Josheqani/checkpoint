@@ -1,19 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
   <defs>
     <linearGradient id="favBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4338ca"/>
+      <stop offset="0%" stop-color="#312e81"/>
+      <stop offset="50%" stop-color="#4338ca"/>
       <stop offset="100%" stop-color="#6366f1"/>
     </linearGradient>
   </defs>
+
+  <!-- Background Squircle -->
   <rect width="64" height="64" rx="16" fill="url(#favBg)"/>
-  <!-- Milestone Ring -->
-  <circle cx="32" cy="32" r="22" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
-  <!-- Flagpole -->
-  <path d="M24 16 L24 48" stroke="#c7d2fe" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- Flag -->
-  <path d="M24 18 L42 26 L24 34 Z" fill="#38bdf8"/>
-  <!-- Checkmark -->
-  <path d="M18 36 L28 45 L48 23" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Beacon -->
-  <circle cx="24" cy="16" r="2" fill="#ffffff"/>
+  
+  <!-- Subtle Target Ring -->
+  <circle cx="32" cy="32" r="21" stroke="rgba(255,255,255,0.18)" stroke-width="2" fill="none"/>
+
+  <!-- Bold Clean Checkmark -->
+  <path
+    d="M19 33 L28 42 L45 22"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
 </svg>
