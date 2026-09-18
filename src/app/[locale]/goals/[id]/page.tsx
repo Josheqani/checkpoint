@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReminderItemCard } from "@/components/reminders/reminder-item";
 import { EmptyReminders } from "@/components/reminders/empty-reminders";
+import { ReminderDialog } from "@/components/reminders/reminder-dialog";
 import type { GoalWithReminders } from "@/types/goal";
 import type { ReminderItem } from "@/types/reminder";
 
@@ -35,6 +36,10 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
   const [reminders, setReminders] = useState<ReminderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Reminder Form Dialog state (create / edit)
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedReminder, setSelectedReminder] = useState<ReminderItem | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -83,8 +88,8 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
   };
 
   const handleEdit = (reminder: ReminderItem) => {
-    // Handled in Stage 3
-    console.log("Edit reminder:", reminder);
+    setSelectedReminder(reminder);
+    setIsFormOpen(true);
   };
 
   const handleDelete = (reminder: ReminderItem) => {
@@ -93,8 +98,8 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
   };
 
   const handleAddReminder = () => {
-    // Handled in Stage 3
-    console.log("Add reminder");
+    setSelectedReminder(null);
+    setIsFormOpen(true);
   };
 
   const formatTargetDate = (dateVal: string | number | null | undefined) => {
@@ -256,6 +261,14 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
           </div>
         </>
       )}
+
+      <ReminderDialog
+        goalId={goalId}
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        reminder={selectedReminder}
+        onSaved={fetchData}
+      />
     </div>
   );
 }
