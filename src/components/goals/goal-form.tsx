@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -17,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
 import type { GoalWithReminders } from "@/types/goal";
 
 const goalFormSchema = z.object({
@@ -176,7 +176,7 @@ export function GoalForm({ goal, onSuccess, onCancel }: GoalFormProps) {
           <Button type="submit" disabled={submitting} className="cursor-pointer">
             {submitting ? (
               <>
-                <Icon name="progress_activity" size="sm" className="me-2 animate-spin" />
+                <Loader2 className="w-4 h-4 me-2 animate-spin" />
                 <span>
                   {isEditing
                     ? t("form.savingButton")

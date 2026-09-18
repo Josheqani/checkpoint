@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
 import type { GoalWithReminders } from "@/types/goal";
 
 interface DeleteGoalDialogProps {
@@ -59,7 +59,7 @@ export function DeleteGoalDialog({
       <DialogContent className="sm:max-w-[440px]">
         <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-2">
-            <Icon name="warning" size="sm" className="text-destructive shrink-0" fill />
+            <AlertTriangle className="w-5 h-5 shrink-0" />
             <span>{t("deleteDialog.title")}</span>
           </DialogTitle>
           <DialogDescription className="pt-2 text-foreground/90">
@@ -68,7 +68,7 @@ export function DeleteGoalDialog({
         </DialogHeader>
 
         <div className="p-3.5 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-start gap-2.5">
-          <Icon name="warning" size="xs" className="text-destructive shrink-0 mt-0.5" fill />
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <span className="leading-relaxed">
             {t("deleteDialog.cascadeWarning", { count: goal.totalRemindersCount })}
           </span>
@@ -93,7 +93,7 @@ export function DeleteGoalDialog({
           >
             {deleting ? (
               <>
-                <Icon name="progress_activity" size="sm" className="animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 <span>{t("deleteDialog.deleting")}</span>
               </>
             ) : (

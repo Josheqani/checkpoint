@@ -1,11 +1,11 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { Bell, Calendar, Clock, Pencil, Trash2 } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
 import type { GoalWithReminders } from "@/types/goal";
 
 interface GoalCardProps {
@@ -59,7 +59,7 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
             variant={goal.activeRemindersCount > 0 ? "default" : "secondary"}
             className="shrink-0 gap-1.5 text-xs font-medium"
           >
-            <Icon name="notifications" size="xs" fill />
+            <Bell className="w-3.5 h-3.5" />
             <span>
               {t("activeReminders", { count: goal.activeRemindersCount })}
             </span>
@@ -76,7 +76,7 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
 
         <div className="space-y-2 text-xs text-muted-foreground pt-3 border-t border-outline-variant/30">
           <div className="flex items-center gap-2">
-            <Icon name="calendar_today" size="xs" className="text-muted-foreground/80 shrink-0" />
+            <Calendar className="w-3.5 h-3.5 shrink-0 text-muted-foreground/80" />
             <span>
               <span className="font-medium text-foreground/80">{t("targetDate")}:</span>{" "}
               {formatTargetDate(goal.targetDate)}
@@ -84,7 +84,7 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <Icon name="schedule" size="xs" className="text-muted-foreground/80 shrink-0" />
+            <Clock className="w-3.5 h-3.5 shrink-0 text-muted-foreground/80" />
             <span>
               <span className="font-medium text-foreground/80">{t("created")}:</span>{" "}
               {formatCreatedDate(goal.createdAt)}
@@ -100,7 +100,7 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           onClick={() => onEdit(goal)}
           className="gap-1.5 rounded-full h-8 px-3.5 text-xs cursor-pointer text-foreground/80 hover:text-primary hover:border-primary/40 transition-colors"
         >
-          <Icon name="edit" size="xs" />
+          <Pencil className="w-3.5 h-3.5" />
           <span>{t("edit")}</span>
         </Button>
         <Button
@@ -109,7 +109,7 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           onClick={() => onDelete(goal)}
           className="gap-1.5 rounded-full h-8 px-3.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 hover:border-destructive/60 cursor-pointer transition-colors"
         >
-          <Icon name="delete" size="xs" />
+          <Trash2 className="w-3.5 h-3.5" />
           <span>{t("delete")}</span>
         </Button>
       </CardFooter>

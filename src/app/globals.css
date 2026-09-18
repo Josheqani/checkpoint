@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "material-symbols/rounded.css";
 
 @layer base {
   * {
