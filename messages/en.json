@@ -16,6 +16,34 @@
     },
     "localeSwitcher": "Language"
   },
+  "nav": {
+    "goals": "Goals",
+    "history": "SMS History"
+  },
+  "history": {
+    "title": "SMS History",
+    "subtitle": "Complete audit trail of all automated reminder notifications",
+    "totalDispatched": "{count, plural, =0 {No messages dispatched} =1 {1 message dispatched} other {# messages dispatched}}",
+    "table": {
+      "goalTitle": "Goal Title",
+      "phoneNumber": "Recipient",
+      "sentAt": "Sent Date & Time (Tehran)",
+      "status": "Status",
+      "details": "Details",
+      "deletedGoal": "Deleted Goal",
+      "successDetail": "Delivered successfully",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "failed": "Failed"
+    },
+    "emptyTitle": "No SMS notifications sent yet",
+    "emptyDescription": "When your scheduled reminders are triggered, their delivery status and logs will appear here.",
+    "loadMore": "Load More",
+    "loadingMore": "Loading...",
+    "loading": "Loading history...",
+    "fetchError": "Failed to load SMS history",
+    "retry": "Try again"
+  },
   "auth": {
     "loginTitle": "Sign In",
     "loginDescription": "Enter your credentials to access Checkpoint",

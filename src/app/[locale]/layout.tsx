@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { routing, Link } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { LogoutButton } from "@/components/logout-button";
+import { MainNav } from "@/components/main-nav";
 import { Toaster } from "@/components/ui/sonner";
 import {
   SESSION_COOKIE_NAME,
@@ -100,17 +101,20 @@ export default async function RootLayout({
       <body className="min-h-screen bg-background text-foreground antialiased flex flex-col selection:bg-primary-container selection:text-on-primary-container">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <header className="w-full border-b border-outline-variant/30 bg-surface/85 backdrop-blur-md sticky top-0 z-50 transition-shadow">
-            <div className="max-w-5xl mx-auto flex items-center justify-between p-3.5 sm:px-6">
-              <Link
-                href="/"
-                className="flex items-center gap-2.5 font-semibold text-base sm:text-lg tracking-tight hover:opacity-90 transition-opacity"
-              >
-                <div className="w-8 h-8 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center font-black text-xs shadow-xs">
-                  CP
-                </div>
-                <span>{isFa ? "چک‌پوینت" : "Checkpoint"}</span>
-              </Link>
-              <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="max-w-5xl mx-auto flex items-center justify-between p-3.5 sm:px-6 gap-2 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-6">
+                <Link
+                  href="/"
+                  className="flex items-center gap-2.5 font-semibold text-base sm:text-lg tracking-tight hover:opacity-90 transition-opacity shrink-0"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center font-black text-xs shadow-xs">
+                    CP
+                  </div>
+                  <span className="hidden xs:inline">{isFa ? "چک‌پوینت" : "Checkpoint"}</span>
+                </Link>
+                {isLoggedIn && <MainNav />}
+              </div>
+              <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
                 <LocaleSwitcher />
                 {isLoggedIn && <LogoutButton />}
               </div>
