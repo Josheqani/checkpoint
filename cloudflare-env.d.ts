@@ -7,6 +7,9 @@ interface __BaseEnv_CloudflareEnv {
 	ASSETS: Fetcher;
 	NEXTJS_ENV: string;
 	WORKER_SELF_REFERENCE: Service<typeof import("./.open-next/worker").default>;
+	AUTH_USERNAME: string;
+	AUTH_PASSWORD_HASH: string;
+	SESSION_SECRET: string;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {
