@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { routing } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { LogoutButton } from "@/components/logout-button";
+import { Toaster } from "@/components/ui/sonner";
 import {
   SESSION_COOKIE_NAME,
   getSessionSecret,
@@ -100,6 +101,7 @@ export default async function RootLayout({
             </div>
           </header>
           <main className="flex-1 flex flex-col">{children}</main>
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>

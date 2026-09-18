@@ -26,5 +26,54 @@
     "logoutButton": "Log Out",
     "invalidCredentials": "Invalid username or password",
     "errorOccurred": "An error occurred. Please try again."
+  },
+  "goals": {
+    "title": "My Goals",
+    "subtitle": "Track your targets and manage automated reminders",
+    "newGoal": "New Goal",
+    "emptyTitle": "No goals yet",
+    "emptyDescription": "Create your first goal to get started with automated checkpoint reminders.",
+    "createFirstGoal": "Create your first goal",
+    "activeReminders": "{count, plural, =0 {No active reminders} =1 {1 active reminder} other {# active reminders}}",
+    "targetDate": "Target Date",
+    "noTargetDate": "No target date",
+    "created": "Created",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading goals...",
+    "fetchError": "Failed to load goals",
+    "retry": "Try again",
+    "form": {
+      "createTitle": "Create New Goal",
+      "createDescription": "Set a new objective to stay on track.",
+      "editTitle": "Edit Goal",
+      "editDescription": "Update the details of your objective.",
+      "titleLabel": "Goal Title",
+      "titlePlaceholder": "e.g. Run 5km 3 times a week",
+      "titleRequired": "Title is required",
+      "descriptionLabel": "Description (Optional)",
+      "descriptionPlaceholder": "Why is this goal important? What are the milestones?",
+      "targetDateLabel": "Target Date (Optional)",
+      "cancel": "Cancel",
+      "createButton": "Create Goal",
+      "creatingButton": "Creating...",
+      "saveButton": "Save Changes",
+      "savingButton": "Saving..."
+    },
+    "deleteDialog": {
+      "title": "Delete Goal",
+      "description": "Are you sure you want to delete \"{title}\"?",
+      "cascadeWarning": "This will also permanently delete {count, plural, =0 {no reminders} =1 {1 reminder} other {# reminders}} attached to this goal.",
+      "confirm": "Delete",
+      "deleting": "Deleting..."
+    },
+    "toast": {
+      "created": "Goal created successfully",
+      "updated": "Goal updated successfully",
+      "deleted": "Goal deleted successfully",
+      "createError": "Failed to create goal",
+      "updateError": "Failed to update goal",
+      "deleteError": "Failed to delete goal"
+    }
   }
 }

@@ -26,5 +26,54 @@
     "logoutButton": "خروج",
     "invalidCredentials": "نام کاربری یا رمز عبور اشتباه است",
     "errorOccurred": "خطایی رخ داد. لطفاً دوباره تلاش کنید."
+  },
+  "goals": {
+    "title": "اهداف من",
+    "subtitle": "پیگیری اهداف و مدیریت یادآورهای خودکار",
+    "newGoal": "هدف جدید",
+    "emptyTitle": "هنوز هدفی ثبت نشده است",
+    "emptyDescription": "اولین هدف خود را بسازید تا یادآورهای خودکار چک‌پوینت برای شما ارسال شود.",
+    "createFirstGoal": "ایجاد اولین هدف",
+    "activeReminders": "{count, plural, =0 {بدون یادآور فعال} =1 {۱ یادآور فعال} other {# یادآور فعال}}",
+    "targetDate": "تاریخ هدف",
+    "noTargetDate": "بدون تاریخ هدف",
+    "created": "ایجاد شده در",
+    "edit": "ویرایش",
+    "delete": "حذف",
+    "loading": "در حال دریافت اهداف...",
+    "fetchError": "خطا در بارگذاری اهداف",
+    "retry": "تلاش مجدد",
+    "form": {
+      "createTitle": "ایجاد هدف جدید",
+      "createDescription": "هدف جدیدی برای پیگیری و حفظ تمرکز ثبت کنید.",
+      "editTitle": "ویرایش هدف",
+      "editDescription": "اطلاعات و جزئیات هدف خود را به‌روزرسانی کنید.",
+      "titleLabel": "عنوان هدف",
+      "titlePlaceholder": "مثال: دویدن ۵ کیلومتر ۳ بار در هفته",
+      "titleRequired": "وارد کردن عنوان الزامی است",
+      "descriptionLabel": "توضیحات (اختیاری)",
+      "descriptionPlaceholder": "چرا این هدف مهم است؟ چه مراحلی دارد؟",
+      "targetDateLabel": "تاریخ هدف (اختیاری)",
+      "cancel": "انصراف",
+      "createButton": "ایجاد هدف",
+      "creatingButton": "در حال ایجاد...",
+      "saveButton": "ذخیره تغییرات",
+      "savingButton": "در حال ذخیره..."
+    },
+    "deleteDialog": {
+      "title": "حذف هدف",
+      "description": "آیا از حذف «{title}» اطمینان دارید؟",
+      "cascadeWarning": "این عمل همچنین {count, plural, =0 {هیچ یادآوری} =1 {۱ یادآور} other {# یادآور}} متصل به این هدف را به صورت دائمی حذف خواهد کرد.",
+      "confirm": "حذف هدف",
+      "deleting": "در حال حذف..."
+    },
+    "toast": {
+      "created": "هدف با موفقیت ایجاد شد",
+      "updated": "هدف با موفقیت به‌روزرسانی شد",
+      "deleted": "هدف با موفقیت حذف شد",
+      "createError": "خطا در ایجاد هدف",
+      "updateError": "خطا در به‌روزرسانی هدف",
+      "deleteError": "خطا در حذف هدف"
+    }
   }
 }
