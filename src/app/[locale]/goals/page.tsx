@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { GoalCard } from "@/components/goals/goal-card";
 import { EmptyGoals } from "@/components/goals/empty-goals";
 import { GoalDialog } from "@/components/goals/goal-dialog";
+import { DeleteGoalDialog } from "@/components/goals/delete-goal-dialog";
 import type { GoalWithReminders } from "@/types/goal";
 
 export default function GoalsPage() {
@@ -19,6 +20,9 @@ export default function GoalsPage() {
   // Goal Form dialog state (create / edit)
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<GoalWithReminders | null>(null);
+
+  // Delete confirmation dialog state
+  const [deletingGoal, setDeletingGoal] = useState<GoalWithReminders | null>(null);
 
   const fetchGoals = useCallback(async () => {
     setLoading(true);
@@ -59,8 +63,7 @@ export default function GoalsPage() {
   };
 
   const handleDelete = (goal: GoalWithReminders) => {
-    // Handled in stage 4
-    console.log("Delete goal:", goal);
+    setDeletingGoal(goal);
   };
 
   return (
@@ -115,6 +118,15 @@ export default function GoalsPage() {
         onOpenChange={setIsFormOpen}
         goal={selectedGoal}
         onSaved={fetchGoals}
+      />
+
+      <DeleteGoalDialog
+        goal={deletingGoal}
+        open={Boolean(deletingGoal)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingGoal(null);
+        }}
+        onDeleted={fetchGoals}
       />
     </div>
   );

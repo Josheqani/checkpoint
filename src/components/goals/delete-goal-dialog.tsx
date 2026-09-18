@@ -1,0 +1,107 @@
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import type { GoalWithReminders } from "@/types/goal";
+
+interface DeleteGoalDialogProps {
+  goal: GoalWithReminders | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onDeleted: () => void;
+}
+
+export function DeleteGoalDialog({
+  goal,
+  open,
+  onOpenChange,
+  onDeleted,
+}: DeleteGoalDialogProps) {
+  const t = useTranslations("goals");
+  const [deleting, setDeleting] = useState(false);
+
+  if (!goal) return null;
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/goals/${goal.id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete goal");
+      }
+
+      toast.success(t("toast.deleted"));
+      onOpenChange(false);
+      onDeleted();
+    } catch {
+      toast.error(t("toast.deleteError"));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[440px]">
+        <DialogHeader>
+          <DialogTitle className="text-destructive flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 shrink-0" />
+            <span>{t("deleteDialog.title")}</span>
+          </DialogTitle>
+          <DialogDescription className="pt-2 text-foreground/90">
+            {t("deleteDialog.description", { title: goal.title })}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="p-3.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-start gap-2.5">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span className="leading-relaxed">
+            {t("deleteDialog.cascadeWarning", { count: goal.totalRemindersCount })}
+          </span>
+        </div>
+
+        <DialogFooter className="gap-2 pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={deleting}
+            className="cursor-pointer"
+          >
+            {t("form.cancel")}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="cursor-pointer gap-2"
+          >
+            {deleting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{t("deleteDialog.deleting")}</span>
+              </>
+            ) : (
+              t("deleteDialog.confirm")
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
