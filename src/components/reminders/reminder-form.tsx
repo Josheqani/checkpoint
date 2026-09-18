@@ -17,6 +17,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { iranianPhoneRegex } from "@/lib/validations/reminder";
 import type { ReminderItem, RecurrencePattern } from "@/types/reminder";
@@ -239,7 +240,9 @@ export function ReminderForm({
 
         {/* Schedule type toggle */}
         <div className="space-y-2">
-          <FormLabel>{t("form.scheduleTypeLabel")}</FormLabel>
+          <Label className="text-sm font-medium leading-none">
+            {t("form.scheduleTypeLabel")}
+          </Label>
           <div className="grid grid-cols-2 gap-2">
             <Button
               type="button"
