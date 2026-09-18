@@ -10,6 +10,7 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { LogoutButton } from "@/components/logout-button";
 import { MainNav } from "@/components/main-nav";
 import { MobileNav } from "@/components/mobile-nav";
+import { PwaRegister } from "@/components/pwa-register";
 import { SettingsProvider } from "@/lib/settings-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -58,12 +59,28 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isFa = locale === "fa";
   return {
-    title: locale === "fa" ? "چک‌پوینت" : "Checkpoint",
+    title: isFa ? "چک‌پوینت | مدیریت اهداف و یادآورها" : "Checkpoint | Goals & Automated Reminders",
     description:
       locale === "fa"
-        ? "استقرار Next.js روی کلودفلر ورکرز با آداپتور OpenNext"
-        : "Next.js App Router on Cloudflare Workers via OpenNext",
+        ? "پیگیری اهداف و دریافت یادآورهای خودکار پیامکی"
+        : "Track goals and receive automated SMS reminders with Checkpoint",
+    manifest: "/manifest.json",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: isFa ? "چک‌پوینت" : "Checkpoint",
+    },
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ],
+      apple: [
+        { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
+    },
   };
 }
 
@@ -104,6 +121,11 @@ export default async function RootLayout({
       }
     >
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <meta name="theme-color" content="#4f46e5" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem("checkpoint-theme")||"system";var d=t==="dark"||(t==="system"&&window.matchMedia("(prefers-color-scheme:dark)").matches);if(d){document.documentElement.classList.add("dark")}else{document.documentElement.classList.remove("dark")}}catch(e){}})();`,
@@ -126,9 +148,11 @@ export default async function RootLayout({
                       href="/"
                       className="flex items-center gap-2.5 font-semibold text-base sm:text-lg tracking-tight hover:opacity-90 transition-opacity shrink-0"
                     >
-                      <div className="w-8 h-8 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center font-black text-xs shadow-xs">
-                        CP
-                      </div>
+                      <img
+                        src="/favicon.svg"
+                        alt="Checkpoint"
+                        className="w-8 h-8 rounded-xl shadow-xs shrink-0"
+                      />
                       <span className="hidden xs:inline">{isFa ? "چک‌پوینت" : "Checkpoint"}</span>
                     </Link>
                     {isLoggedIn && <MainNav />}
@@ -142,6 +166,7 @@ export default async function RootLayout({
               </header>
               <main className="flex-1 flex flex-col pb-20 sm:pb-8">{children}</main>
               {isLoggedIn && <MobileNav />}
+              <PwaRegister />
               <Toaster />
             </SettingsProvider>
           </NextIntlClientProvider>
