@@ -9,13 +9,19 @@ import { GoalCard } from "@/components/goals/goal-card";
 import { EmptyGoals } from "@/components/goals/empty-goals";
 import { GoalDialog } from "@/components/goals/goal-dialog";
 import { DeleteGoalDialog } from "@/components/goals/delete-goal-dialog";
+import {
+  DashboardSummaryStrip,
+  type DashboardStats,
+} from "@/components/goals/dashboard-summary-strip";
 import type { GoalWithReminders } from "@/types/goal";
 
 export default function GoalsPage() {
   const t = useTranslations("goals");
 
   const [goals, setGoals] = useState<GoalWithReminders[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Goal Form dialog state (create / edit)
@@ -24,6 +30,25 @@ export default function GoalsPage() {
 
   // Delete confirmation dialog state
   const [deletingGoal, setDeletingGoal] = useState<GoalWithReminders | null>(null);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetch("/api/dashboard/stats");
+      if (res.ok) {
+        const data = (await res.json()) as {
+          success?: boolean;
+          stats?: DashboardStats;
+        };
+        if (data.success && data.stats) {
+          setStats(data.stats);
+        }
+      }
+    } catch {
+      // Non-fatal
+    } finally {
+      setStatsLoading(false);
+    }
+  }, []);
 
   const fetchGoals = useCallback(async () => {
     setLoading(true);
@@ -49,9 +74,14 @@ export default function GoalsPage() {
     }
   }, [t]);
 
-  useEffect(() => {
+  const refreshAll = useCallback(() => {
     fetchGoals();
-  }, [fetchGoals]);
+    fetchStats();
+  }, [fetchGoals, fetchStats]);
+
+  useEffect(() => {
+    refreshAll();
+  }, [refreshAll]);
 
   const handleCreateOpen = () => {
     setSelectedGoal(null);
@@ -86,6 +116,9 @@ export default function GoalsPage() {
           <span>{t("newGoal")}</span>
         </Button>
       </div>
+
+      {/* Overview Summary Strip */}
+      <DashboardSummaryStrip stats={stats} loading={statsLoading} />
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3">
@@ -134,7 +167,7 @@ export default function GoalsPage() {
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
         goal={selectedGoal}
-        onSaved={fetchGoals}
+        onSaved={refreshAll}
       />
 
       <DeleteGoalDialog
@@ -143,7 +176,7 @@ export default function GoalsPage() {
         onOpenChange={(open) => {
           if (!open) setDeletingGoal(null);
         }}
-        onDeleted={fetchGoals}
+        onDeleted={refreshAll}
       />
     </div>
   );

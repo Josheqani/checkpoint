@@ -31,6 +31,15 @@
     "title": "My Goals",
     "subtitle": "Track your targets and manage automated reminders",
     "newGoal": "New Goal",
+    "summary": {
+      "activeGoals": "Active Goals",
+      "activeReminders": "Active Reminders",
+      "sentLast7Days": "Sent (Last 7d)",
+      "nextReminder": "Next Reminder",
+      "noUpcoming": "None scheduled",
+      "today": "Today",
+      "tomorrow": "Tomorrow"
+    },
     "emptyTitle": "No goals yet",
     "emptyDescription": "Create your first goal to get started with automated checkpoint reminders.",
     "createFirstGoal": "Create your first goal",

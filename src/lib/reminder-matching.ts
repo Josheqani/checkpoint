@@ -297,3 +297,108 @@ export function isReminderDue(
 
   return false;
 }
+
+/**
+ * Calculates the next upcoming occurrence for a recurring reminder in Iran time (Asia/Tehran).
+ */
+export function getNextOccurrenceForRecurring(
+  pattern: unknown,
+  fromTime: Date = new Date()
+): Date | null {
+  const parsed = parseRecurrencePattern(pattern);
+  if (!parsed) return null;
+
+  const [targetH, targetM] = parsed.time.split(":").map((n) => parseInt(n, 10));
+  const targetMinutes = targetH * 60 + targetM;
+
+  const tehranNow = getTehranDateTime(fromTime);
+
+  // Check today (d = 0) through next 7 days (d = 7)
+  for (let d = 0; d <= 7; d++) {
+    const dayOfWeek = (tehranNow.dayOfWeek + d) % 7;
+    if (parsed.daysOfWeek.includes(dayOfWeek)) {
+      if (d === 0 && targetMinutes <= tehranNow.totalMinutes) {
+        continue;
+      }
+      // Calendar day offset in Tehran
+      const candidateDateInTehran = new Date(
+        fromTime.getTime() + d * 24 * 60 * 60 * 1000
+      );
+      const targetTehran = getTehranDateTime(candidateDateInTehran);
+
+      const utcMs =
+        Date.UTC(
+          targetTehran.year,
+          targetTehran.month - 1,
+          targetTehran.day,
+          targetH,
+          targetM
+        ) - (3 * 60 + 30) * 60 * 1000;
+
+      const nextDate = new Date(utcMs);
+      if (nextDate.getTime() > fromTime.getTime()) {
+        return nextDate;
+      }
+    }
+  }
+
+  return null;
+}
+
+export interface UpcomingCandidate {
+  id: string;
+  goalId: string;
+  goalTitle: string;
+  scheduleType: "once" | "recurring" | string;
+  scheduledAt?: Date | number | string | null;
+  recurrencePattern?: unknown;
+  isActive?: boolean | number | null;
+}
+
+export interface UpcomingReminderResult {
+  reminderId: string;
+  goalId: string;
+  goalTitle: string;
+  scheduleType: string;
+  nextDate: Date;
+}
+
+/**
+ * Finds the single earliest upcoming reminder across all active goals/reminders.
+ */
+export function getNextUpcomingReminder(
+  remindersList: UpcomingCandidate[],
+  now: Date = new Date()
+): UpcomingReminderResult | null {
+  let nearest: UpcomingReminderResult | null = null;
+
+  for (const r of remindersList) {
+    if (!r.isActive) continue;
+
+    let nextDate: Date | null = null;
+    if (r.scheduleType === "once" && r.scheduledAt) {
+      const d =
+        r.scheduledAt instanceof Date ? r.scheduledAt : new Date(r.scheduledAt);
+      if (d.getTime() > now.getTime()) {
+        nextDate = d;
+      }
+    } else if (r.scheduleType === "recurring" && r.recurrencePattern) {
+      nextDate = getNextOccurrenceForRecurring(r.recurrencePattern, now);
+    }
+
+    if (nextDate) {
+      if (!nearest || nextDate.getTime() < nearest.nextDate.getTime()) {
+        nearest = {
+          reminderId: r.id,
+          goalId: r.goalId,
+          goalTitle: r.goalTitle,
+          scheduleType: r.scheduleType,
+          nextDate,
+        };
+      }
+    }
+  }
+
+  return nearest;
+}
+

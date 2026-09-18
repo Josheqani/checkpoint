@@ -31,6 +31,15 @@
     "title": "اهداف من",
     "subtitle": "پیگیری اهداف و مدیریت یادآورهای خودکار",
     "newGoal": "هدف جدید",
+    "summary": {
+      "activeGoals": "اهداف فعال",
+      "activeReminders": "یادآورهای فعال",
+      "sentLast7Days": "ارسال ۷ روز گذشته",
+      "nextReminder": "یادآور بعدی",
+      "noUpcoming": "تنظیم نشده",
+      "today": "امروز",
+      "tomorrow": "فردا"
+    },
     "emptyTitle": "هنوز هدفی ثبت نشده است",
     "emptyDescription": "اولین هدف خود را بسازید تا یادآورهای خودکار چک‌پوینت برای شما ارسال شود.",
     "createFirstGoal": "ایجاد اولین هدف",
