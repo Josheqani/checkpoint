@@ -10,6 +10,8 @@ interface __BaseEnv_CloudflareEnv {
 	AUTH_USERNAME: string;
 	AUTH_PASSWORD_HASH: string;
 	SESSION_SECRET: string;
+	SMSIR_API_KEY?: string;
+	SMSIR_LINE_NUMBER?: string | number;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {

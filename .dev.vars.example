@@ -2,3 +2,5 @@ NEXTJS_ENV=development
 AUTH_USERNAME=admin
 AUTH_PASSWORD_HASH=placeholder_bcrypt_hash
 SESSION_SECRET=placeholder_random_32_byte_hex_string
+SMSIR_API_KEY=placeholder_smsir_api_key
+SMSIR_LINE_NUMBER=300000000000
