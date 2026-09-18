@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import { routing } from "@/i18n/routing";
+import { routing, Link } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { LogoutButton } from "@/components/logout-button";
 import { Toaster } from "@/components/ui/sonner";
@@ -89,11 +89,14 @@ export default async function RootLayout({
       <body className="min-h-screen bg-background text-foreground antialiased flex flex-col font-sans">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <header className="w-full border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-            <div className="max-w-4xl mx-auto flex items-center justify-between p-4">
-              <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
+            <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
+              <Link
+                href="/"
+                className="flex items-center gap-2 font-bold text-lg tracking-tight hover:opacity-80 transition-opacity"
+              >
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />
                 <span>{isFa ? "چک‌پوینت" : "Checkpoint"}</span>
-              </div>
+              </Link>
               <div className="flex items-center gap-3">
                 <LocaleSwitcher />
                 {isLoggedIn && <LogoutButton />}
