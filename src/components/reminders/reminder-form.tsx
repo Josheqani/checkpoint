@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Loader2, Calendar, Repeat } from "lucide-react";
+import { Loader2, Calendar, Repeat, Sparkles } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { CustomDatePicker } from "@/components/ui/custom-date-picker";
+import { useSettings } from "@/lib/settings-context";
 import { iranianPhoneRegex } from "@/lib/validations/reminder";
 import type { ReminderItem, RecurrencePattern } from "@/types/reminder";
 
@@ -107,6 +109,7 @@ export function ReminderForm({
   const [submitting, setSubmitting] = useState(false);
 
   const isEditing = Boolean(reminder && reminder.id);
+  const { defaultPhoneNumber } = useSettings();
 
   // Parse recurrence pattern if editing
   const initialPattern: RecurrencePattern | null = (() => {
@@ -123,7 +126,7 @@ export function ReminderForm({
   const form = useForm<ReminderFormValues>({
     resolver: zodResolver(reminderFormSchema),
     defaultValues: {
-      phoneNumber: reminder?.phoneNumber ?? "",
+      phoneNumber: reminder?.phoneNumber || (!isEditing ? defaultPhoneNumber : ""),
       scheduleType: reminder?.scheduleType ?? "once",
       scheduledAt: toDateTimeLocalString(reminder?.scheduledAt),
       daysOfWeek: initialPattern?.daysOfWeek ?? [1, 2, 3, 4, 5],
@@ -135,13 +138,13 @@ export function ReminderForm({
 
   useEffect(() => {
     form.reset({
-      phoneNumber: reminder?.phoneNumber ?? "",
+      phoneNumber: reminder?.phoneNumber || (!isEditing ? defaultPhoneNumber : ""),
       scheduleType: reminder?.scheduleType ?? "once",
       scheduledAt: toDateTimeLocalString(reminder?.scheduledAt),
       daysOfWeek: initialPattern?.daysOfWeek ?? [1, 2, 3, 4, 5],
       time: initialPattern?.time ?? "09:00",
     });
-  }, [reminder, form, initialPattern]);
+  }, [reminder, form, initialPattern, isEditing, defaultPhoneNumber]);
 
   const onSubmit = async (values: ReminderFormValues) => {
     setSubmitting(true);
@@ -216,7 +219,23 @@ export function ReminderForm({
           name="phoneNumber"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>{t("form.phoneLabel")}</FormLabel>
+              <div className="flex items-center justify-between gap-2">
+                <FormLabel>{t("form.phoneLabel")}</FormLabel>
+                {defaultPhoneNumber && field.value !== defaultPhoneNumber && (
+                  <button
+                    type="button"
+                    onClick={() => field.onChange(defaultPhoneNumber)}
+                    className="text-[11px] text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>
+                      {isRtl
+                        ? `شماره پیش‌فرض (${defaultPhoneNumber})`
+                        : `Use default (${defaultPhoneNumber})`}
+                    </span>
+                  </button>
+                )}
+              </div>
               <FormControl>
                 <Input
                   placeholder={t("form.phonePlaceholder")}
@@ -274,10 +293,11 @@ export function ReminderForm({
               <FormItem>
                 <FormLabel>{t("form.dateTimeLabel")}</FormLabel>
                 <FormControl>
-                  <Input
-                    type="datetime-local"
+                  <CustomDatePicker
+                    withTime
+                    value={field.value || ""}
+                    onChange={field.onChange}
                     disabled={submitting}
-                    {...field}
                   />
                 </FormControl>
                 {fieldState.error && (

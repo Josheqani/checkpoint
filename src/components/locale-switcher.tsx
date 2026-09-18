@@ -1,10 +1,9 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Languages } from "lucide-react";
 
 export function LocaleSwitcher() {
   const locale = useLocale();
@@ -15,9 +14,26 @@ export function LocaleSwitcher() {
     router.replace(pathname, { locale: nextLocale });
   }
 
+  const otherLocale = locale === "en" ? "fa" : "en";
+  const otherLocaleLabel = locale === "en" ? "فارسی" : "EN";
+
   return (
-    <div className="flex items-center gap-1.5">
-      <div className="inline-flex items-center rounded-full border border-outline-variant/50 bg-surface-container p-1 shadow-2xs">
+    <div className="flex items-center">
+      {/* Mobile compact single button (<sm) */}
+      <div className="sm:hidden">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => switchLocale(otherLocale)}
+          className="h-8 px-2.5 rounded-full text-xs font-semibold border-outline-variant/40 bg-surface-container hover:bg-surface-container-high transition-colors"
+          title={`Switch to ${otherLocaleLabel}`}
+        >
+          {otherLocaleLabel}
+        </Button>
+      </div>
+
+      {/* Desktop dual toggle pills (>=sm) */}
+      <div className="hidden sm:inline-flex items-center rounded-full border border-outline-variant/50 bg-surface-container p-1 shadow-2xs">
         <Button
           variant={locale === "en" ? "default" : "ghost"}
           size="sm"

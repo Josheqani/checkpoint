@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { CustomDatePicker } from "@/components/ui/custom-date-picker";
 import type { GoalWithReminders } from "@/types/goal";
 
 const goalFormSchema = z.object({
@@ -152,10 +153,10 @@ export function GoalForm({ goal, onSuccess, onCancel }: GoalFormProps) {
             <FormItem>
               <FormLabel>{t("form.targetDateLabel")}</FormLabel>
               <FormControl>
-                <Input
-                  type="date"
+                <CustomDatePicker
+                  value={field.value || ""}
+                  onChange={field.onChange}
                   disabled={submitting}
-                  {...field}
                 />
               </FormControl>
               <FormMessage />

@@ -18,7 +18,8 @@
   },
   "nav": {
     "goals": "Goals",
-    "history": "SMS History"
+    "history": "SMS History",
+    "settings": "Settings"
   },
   "history": {
     "title": "SMS History",
@@ -192,5 +193,21 @@
       "deleteError": "Failed to delete reminder",
       "toggleError": "Failed to update status"
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your calendar system and quick reminder preferences",
+    "calendarTitle": "Calendar System",
+    "calendarDescription": "Select which calendar you want to use when setting dates for goals and reminders.",
+    "jalaliLabel": "Jalali (Solar Hijri / Shamsi)",
+    "jalaliHint": "Official Iranian calendar (Farvardin, Ordibehesht, etc.) starting Saturday",
+    "gregorianLabel": "Gregorian (Miladi)",
+    "gregorianHint": "Standard international calendar (January, February, etc.) starting Sunday",
+    "phoneTitle": "Default Mobile Number",
+    "phoneDescription": "Save your mobile number to automatically prefill it when adding reminders.",
+    "phoneLabel": "Mobile Number",
+    "phoneHint": "Iranian format: 09XXXXXXXXX. Stored only in your browser's local storage.",
+    "saveButton": "Save Number",
+    "privacyNote": "All settings are stored exclusively in your browser's local storage."
   }
 }

@@ -6,7 +6,7 @@ import { Link } from "@/i18n/routing";
 import { Target, History, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function MainNav() {
+export function MobileNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
 
@@ -42,7 +42,7 @@ export function MainNav() {
   ];
 
   return (
-    <nav className="hidden sm:flex items-center gap-1.5 sm:gap-2">
+    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/90 backdrop-blur-md border-t border-outline-variant/30 px-4 py-2 flex items-center justify-around shadow-lg">
       {links.map((link) => {
         const Icon = link.icon;
         return (
@@ -50,13 +50,13 @@ export function MainNav() {
             key={link.href}
             href={link.href}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-150",
+              "flex flex-col items-center gap-1 px-4 py-1 rounded-2xl text-[11px] font-medium transition-all duration-150",
               link.active
-                ? "bg-secondary-container text-on-secondary-container font-semibold shadow-xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-surface-container"
+                ? "text-primary font-bold bg-primary/10"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Icon className="w-4 h-4" />
             <span>{link.label}</span>
           </Link>
         );

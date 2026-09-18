@@ -30,10 +30,11 @@ export function LogoutButton() {
       size="sm"
       onClick={handleLogout}
       disabled={isPending}
-      className="flex items-center gap-1.5 rounded-full h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-foreground/5 cursor-pointer transition-colors"
+      className="flex items-center gap-1.5 rounded-full h-8 px-2 sm:px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-foreground/5 cursor-pointer transition-colors"
+      title={t("logoutButton")}
     >
       <LogOut className="w-3.5 h-3.5 rtl:rotate-180" />
-      <span>{t("logoutButton")}</span>
+      <span className="hidden sm:inline">{t("logoutButton")}</span>
     </Button>
   );
 }
