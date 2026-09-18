@@ -69,12 +69,20 @@ export default async function middleware(request: NextRequest) {
     return intlMiddleware(request);
   }
 
-  // Protected routes: redirect unauthenticated requests to /{locale}/login
+  // Protected routes: reject unauthenticated API requests with 401, redirect page requests to /{locale}/login
   if (!valid) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
-  // Authenticated: proceed through intl middleware
+  // Authenticated API routes: proceed directly without intl redirect
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
+  // Authenticated page routes: proceed through intl middleware
   return intlMiddleware(request);
 }
 
