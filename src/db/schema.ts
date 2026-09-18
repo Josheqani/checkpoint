@@ -7,11 +7,7 @@ export const goals = sqliteTable("goals", {
     .$defaultFn(() => crypto.randomUUID()),
   title: text("title").notNull(),
   description: text("description"),
-  cadence: text("cadence").notNull(), // "daily" | "weekly" | "custom"
-  reminderTime: text("reminder_time").notNull(), // e.g. "09:00"
-  timezone: text("timezone").notNull().default("UTC"),
-  phoneNumber: text("phone_number").notNull(),
-  status: text("status").notNull().default("active"), // "active" | "paused" | "completed"
+  targetDate: integer("target_date", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -29,12 +25,15 @@ export const reminders = sqliteTable(
     goalId: text("goal_id")
       .notNull()
       .references(() => goals.id, { onDelete: "cascade" }),
-    scheduledAt: integer("scheduled_at", { mode: "timestamp" }).notNull(),
-    sentAt: integer("sent_at", { mode: "timestamp" }),
-    status: text("status").notNull().default("pending"), // "pending" | "sent" | "failed"
-    retryCount: integer("retry_count").notNull().default(0),
-    errorMessage: text("error_message"),
+    phoneNumber: text("phone_number").notNull(),
+    scheduleType: text("schedule_type", { enum: ["once", "recurring"] }).notNull(),
+    scheduledAt: integer("scheduled_at", { mode: "timestamp" }),
+    recurrencePattern: text("recurrence_pattern"),
+    isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
     createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
   },
