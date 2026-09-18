@@ -67,7 +67,7 @@ export function DeleteGoalDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-3.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-start gap-2.5">
+        <div className="p-3.5 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-start gap-2.5">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <span className="leading-relaxed">
             {t("deleteDialog.cascadeWarning", { count: goal.totalRemindersCount })}

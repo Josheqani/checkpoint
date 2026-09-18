@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Fab } from "@/components/ui/fab";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ReminderItemCard } from "@/components/reminders/reminder-item";
@@ -167,7 +168,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
     <div className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 md:p-8 space-y-6">
       {/* Back button */}
       <div>
-        <Button variant="ghost" size="sm" asChild className="gap-2 -ms-2">
+        <Button variant="ghost" size="sm" asChild className="gap-2 -ms-2 rounded-full text-foreground/80 hover:text-foreground hover:bg-foreground/5 cursor-pointer">
           <Link href="/goals">
             {isRtl ? (
               <ArrowRight className="w-4 h-4" />
@@ -185,22 +186,22 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
           <p className="text-sm">{t("goals.loading")}</p>
         </div>
       ) : error || !goal ? (
-        <div className="p-6 rounded-lg border border-destructive/20 bg-destructive/10 text-center space-y-3">
+        <div className="p-6 rounded-[28px] border border-destructive/25 bg-destructive/10 text-center space-y-3">
           <div className="flex items-center justify-center gap-2 text-destructive font-medium">
             <AlertCircle className="w-5 h-5" />
             <span>{error || t("goals.fetchError")}</span>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchData} className="cursor-pointer">
+          <Button variant="outline" size="sm" onClick={fetchData} className="rounded-full cursor-pointer">
             {t("goals.retry")}
           </Button>
         </div>
       ) : (
         <>
           {/* Goal Overview Card */}
-          <Card className="border-border/80">
+          <Card className="rounded-3xl bg-surface-container-low border border-outline-variant/40">
             <CardHeader className="space-y-2 pb-3">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                <CardTitle className="text-xl sm:text-2xl font-bold break-words">
+                <CardTitle className="text-xl sm:text-2xl font-medium tracking-normal break-words text-foreground">
                   {goal.title}
                 </CardTitle>
                 <Badge
@@ -209,9 +210,9 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
                       ? "default"
                       : "secondary"
                   }
-                  className="shrink-0 gap-1.5 text-xs font-normal self-start"
+                  className="shrink-0 gap-1.5 text-xs font-medium self-start"
                 >
-                  <Bell className="w-3 h-3" />
+                  <Bell className="w-3.5 h-3.5" />
                   <span>
                     {t("goals.activeReminders", {
                       count: reminders.filter((r) => r.isActive).length,
@@ -227,7 +228,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-3 border-t border-border/50">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-3 border-t border-outline-variant/30">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-muted-foreground/80" />
                   <span>
@@ -253,25 +254,24 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
 
           {/* Reminders Section */}
           <div className="space-y-4 pt-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border/60">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-outline-variant/30">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold tracking-tight">
+                  <h2 className="text-2xl font-normal tracking-tight text-foreground">
                     {t("reminders.title")}
                   </h2>
-                  <Badge variant="outline" className="text-xs font-mono">
+                  <Badge variant="outline" className="text-xs font-mono font-medium">
                     {reminders.length}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                   {t("reminders.subtitle")}
                 </p>
               </div>
 
               <Button
                 onClick={handleAddReminder}
-                size="sm"
-                className="gap-2 shrink-0 cursor-pointer"
+                className="gap-2 rounded-full h-10 px-5 shrink-0 cursor-pointer shadow-xs hover:shadow-sm"
               >
                 <Plus className="w-4 h-4" />
                 <span>{t("reminders.addReminder")}</span>
@@ -293,6 +293,19 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Floating Action Button (FAB) for mobile viewports */}
+          <div className="fixed bottom-6 end-6 z-40 sm:hidden">
+            <Fab
+              variant="primary"
+              size="default"
+              onClick={handleAddReminder}
+              aria-label={t("reminders.addReminder")}
+              className="shadow-lg hover:shadow-xl active:shadow-md"
+            >
+              <Plus className="w-6 h-6" />
+            </Fab>
           </div>
         </>
       )}

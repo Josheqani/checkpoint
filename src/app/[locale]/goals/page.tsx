@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Fab } from "@/components/ui/fab";
 import { GoalCard } from "@/components/goals/goal-card";
 import { EmptyGoals } from "@/components/goals/empty-goals";
 import { GoalDialog } from "@/components/goals/goal-dialog";
@@ -68,16 +69,19 @@ export default function GoalsPage() {
 
   return (
     <div className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 md:p-8 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant/30">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-normal tracking-tight text-foreground">
             {t("title")}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
             {t("subtitle")}
           </p>
         </div>
-        <Button onClick={handleCreateOpen} className="gap-2 shrink-0 cursor-pointer">
+        <Button
+          onClick={handleCreateOpen}
+          className="gap-2.5 rounded-full h-11 px-5 shrink-0 cursor-pointer shadow-xs hover:shadow-sm transition-all duration-150"
+        >
           <Plus className="w-4 h-4" />
           <span>{t("newGoal")}</span>
         </Button>
@@ -89,19 +93,19 @@ export default function GoalsPage() {
           <p className="text-sm">{t("loading")}</p>
         </div>
       ) : error ? (
-        <div className="p-6 rounded-lg border border-destructive/20 bg-destructive/10 text-center space-y-3">
+        <div className="p-6 rounded-[28px] border border-destructive/25 bg-destructive/10 text-center space-y-3">
           <div className="flex items-center justify-center gap-2 text-destructive font-medium">
             <AlertCircle className="w-5 h-5" />
             <span>{error}</span>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchGoals} className="cursor-pointer">
+          <Button variant="outline" size="sm" onClick={fetchGoals} className="rounded-full cursor-pointer">
             {t("retry")}
           </Button>
         </div>
       ) : goals.length === 0 ? (
         <EmptyGoals onCreateGoal={handleCreateOpen} />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {goals.map((goal) => (
             <GoalCard
               key={goal.id}
@@ -112,6 +116,19 @@ export default function GoalsPage() {
           ))}
         </div>
       )}
+
+      {/* Floating Action Button (FAB) for mobile viewports */}
+      <div className="fixed bottom-6 end-6 z-40 sm:hidden">
+        <Fab
+          variant="primary"
+          size="default"
+          onClick={handleCreateOpen}
+          aria-label={t("newGoal")}
+          className="shadow-lg hover:shadow-xl active:shadow-md"
+        >
+          <Plus className="w-6 h-6" />
+        </Fab>
+      </div>
 
       <GoalDialog
         open={isFormOpen}

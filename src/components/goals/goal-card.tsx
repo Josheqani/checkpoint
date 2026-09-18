@@ -44,10 +44,10 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
   };
 
   return (
-    <Card className="flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow border-border/80">
+    <Card className="flex flex-col justify-between rounded-3xl bg-surface-container-low border border-outline-variant/40 hover:shadow-md hover:border-outline-variant/70 transition-all duration-200">
       <CardHeader className="space-y-3 pb-3">
         <div className="flex items-start justify-between gap-3">
-          <CardTitle className="text-lg font-semibold leading-snug break-words">
+          <CardTitle className="text-lg font-medium leading-snug break-words">
             <Link
               href={`/goals/${goal.id}`}
               className="hover:text-primary transition-colors hover:underline"
@@ -57,9 +57,9 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           </CardTitle>
           <Badge
             variant={goal.activeRemindersCount > 0 ? "default" : "secondary"}
-            className="shrink-0 gap-1.5 text-xs font-normal"
+            className="shrink-0 gap-1.5 text-xs font-medium"
           >
-            <Bell className="w-3 h-3" />
+            <Bell className="w-3.5 h-3.5" />
             <span>
               {t("activeReminders", { count: goal.activeRemindersCount })}
             </span>
@@ -74,7 +74,7 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           </p>
         )}
 
-        <div className="space-y-1.5 text-xs text-muted-foreground pt-1 border-t border-border/40">
+        <div className="space-y-2 text-xs text-muted-foreground pt-3 border-t border-outline-variant/30">
           <div className="flex items-center gap-2">
             <Calendar className="w-3.5 h-3.5 shrink-0 text-muted-foreground/80" />
             <span>
@@ -93,12 +93,12 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3 border-t border-border/50 flex items-center justify-end gap-2">
+      <CardFooter className="pt-3 border-t border-outline-variant/30 flex items-center justify-end gap-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => onEdit(goal)}
-          className="gap-1.5 cursor-pointer text-xs h-8"
+          className="gap-1.5 rounded-full h-8 px-3.5 text-xs cursor-pointer text-foreground/80 hover:text-primary hover:border-primary/40 transition-colors"
         >
           <Pencil className="w-3.5 h-3.5" />
           <span>{t("edit")}</span>
@@ -107,7 +107,7 @@ export function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           variant="outline"
           size="sm"
           onClick={() => onDelete(goal)}
-          className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 cursor-pointer text-xs h-8"
+          className="gap-1.5 rounded-full h-8 px-3.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 hover:border-destructive/60 cursor-pointer transition-colors"
         >
           <Trash2 className="w-3.5 h-3.5" />
           <span>{t("delete")}</span>

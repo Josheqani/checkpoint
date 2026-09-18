@@ -30,9 +30,9 @@ export function LogoutButton() {
       size="sm"
       onClick={handleLogout}
       disabled={isPending}
-      className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
+      className="flex items-center gap-1.5 rounded-full h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-foreground/5 cursor-pointer transition-colors"
     >
-      <LogOut className="w-4 h-4 rtl:rotate-180" />
+      <LogOut className="w-3.5 h-3.5 rtl:rotate-180" />
       <span>{t("logoutButton")}</span>
     </Button>
   );

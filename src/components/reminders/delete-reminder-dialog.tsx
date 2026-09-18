@@ -71,13 +71,13 @@ export function DeleteReminderDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-3.5 rounded-lg bg-muted/50 border border-border/80 space-y-2 text-sm">
+        <div className="p-3.5 rounded-2xl bg-surface-container border border-outline-variant/40 space-y-2 text-sm">
           <div className="flex items-center gap-2 font-mono">
             <Phone className="w-3.5 h-3.5 text-muted-foreground" />
             <span dir="ltr">{reminder.phoneNumber}</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground text-xs">
-            <Clock className="w-3.5 h-3.5 text-primary/70 shrink-0" />
+            <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
             <span>{summary}</span>
           </div>
         </div>
