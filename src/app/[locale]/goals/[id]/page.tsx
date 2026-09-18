@@ -16,9 +16,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 import { ReminderItemCard } from "@/components/reminders/reminder-item";
 import { EmptyReminders } from "@/components/reminders/empty-reminders";
 import { ReminderDialog } from "@/components/reminders/reminder-dialog";
+import { DeleteReminderDialog } from "@/components/reminders/delete-reminder-dialog";
 import type { GoalWithReminders } from "@/types/goal";
 import type { ReminderItem } from "@/types/reminder";
 
@@ -82,9 +84,43 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
     fetchData();
   }, [fetchData]);
 
+  // Delete confirmation dialog state
+  const [deletingReminder, setDeletingReminder] = useState<ReminderItem | null>(null);
+
   const handleToggleActive = async (reminder: ReminderItem, active: boolean) => {
-    // Handled in Stage 4
-    console.log("Toggle active:", reminder.id, active);
+    // 1. Optimistic update
+    const previousReminders = [...reminders];
+    setReminders((prev) =>
+      prev.map((r) => (r.id === reminder.id ? { ...r, isActive: active } : r))
+    );
+
+    try {
+      const res = await fetch(`/api/reminders/${reminder.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: active }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update status");
+      }
+
+      const data = (await res.json()) as {
+        success?: boolean;
+        reminder?: ReminderItem;
+      };
+
+      if (data.success && data.reminder) {
+        setReminders((prev) =>
+          prev.map((r) => (r.id === reminder.id ? data.reminder! : r))
+        );
+      }
+      toast.success(t("reminders.toast.statusUpdated"));
+    } catch {
+      // Rollback on failure
+      setReminders(previousReminders);
+      toast.error(t("reminders.toast.toggleError"));
+    }
   };
 
   const handleEdit = (reminder: ReminderItem) => {
@@ -93,8 +129,7 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
   };
 
   const handleDelete = (reminder: ReminderItem) => {
-    // Handled in Stage 4
-    console.log("Delete reminder:", reminder);
+    setDeletingReminder(reminder);
   };
 
   const handleAddReminder = () => {
@@ -268,6 +303,15 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
         onOpenChange={setIsFormOpen}
         reminder={selectedReminder}
         onSaved={fetchData}
+      />
+
+      <DeleteReminderDialog
+        reminder={deletingReminder}
+        open={Boolean(deletingReminder)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingReminder(null);
+        }}
+        onDeleted={fetchData}
       />
     </div>
   );
