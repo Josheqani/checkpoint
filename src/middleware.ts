@@ -38,6 +38,17 @@ function getLocaleFromPathOrRequest(request: NextRequest): string {
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // 0. Explicitly bypass static assets and PWA files
+  if (
+    pathname === "/sw.js" ||
+    pathname === "/manifest.json" ||
+    pathname === "/offline" ||
+    pathname === "/offline.html" ||
+    pathname === "/robots.txt"
+  ) {
+    return NextResponse.next();
+  }
+
   // 1. Explicitly bypass auth API routes (e.g. /api/auth/login, /api/auth/logout)
   if (pathname.startsWith("/api/auth/")) {
     return NextResponse.next();
@@ -92,9 +103,9 @@ export const config = {
      * Match all request paths except:
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - favicon.ico, sw.js, manifest.json, offline (PWA and static assets)
      * - static file extensions (.svg, .png, .jpg, .woff2, etc.)
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sw\\.js|manifest\\.json|offline|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot)$).*)",
   ],
 };

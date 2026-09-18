@@ -6,7 +6,7 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.3.0/workbox-sw.js');
 
 const CACHE_VERSION = 'v1';
-const OFFLINE_FALLBACK_URL = '/offline.html';
+const OFFLINE_FALLBACK_URL = '/offline';
 
 if (typeof workbox !== 'undefined') {
   console.log('[SW] Google Workbox initialized successfully');
