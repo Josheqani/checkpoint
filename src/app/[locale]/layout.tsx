@@ -27,7 +27,28 @@ const geistMono = Geist_Mono({
 });
 
 const vazirmatn = localFont({
-  src: "../fonts/Vazirmatn[wght].woff2",
+  src: [
+    {
+      path: "../fonts/Vazirmatn-UI-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Vazirmatn-UI-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Vazirmatn-UI-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Vazirmatn-UI-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-vazirmatn",
   display: "swap",
 });
@@ -86,7 +107,7 @@ export default async function RootLayout({
           : `${geistSans.className} ${geistSans.variable} ${geistMono.variable}`
       }
     >
-      <body className="min-h-screen bg-background text-foreground antialiased flex flex-col font-sans selection:bg-primary-container selection:text-on-primary-container">
+      <body className="min-h-screen bg-background text-foreground antialiased flex flex-col selection:bg-primary-container selection:text-on-primary-container">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <header className="w-full border-b border-outline-variant/30 bg-surface/85 backdrop-blur-md sticky top-0 z-50 transition-shadow">
             <div className="max-w-5xl mx-auto flex items-center justify-between p-3.5 sm:px-6">

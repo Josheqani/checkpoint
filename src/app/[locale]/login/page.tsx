@@ -81,11 +81,9 @@ export default function LoginPage() {
                 {t("usernameLabel")}
               </Label>
               <div className="relative">
-                <Icon
-                  name="person"
-                  size="sm"
-                  className="absolute start-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-                />
+                <div className="absolute inset-y-0 start-0 flex items-center justify-center ps-3.5 pointer-events-none text-muted-foreground">
+                  <Icon name="person" size="default" />
+                </div>
                 <Input
                   id="username"
                   name="username"
@@ -94,7 +92,7 @@ export default function LoginPage() {
                   autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="ps-10 h-12 rounded-2xl"
+                  className="ps-11 h-12 rounded-2xl"
                   disabled={loading}
                 />
               </div>
@@ -105,11 +103,9 @@ export default function LoginPage() {
                 {t("passwordLabel")}
               </Label>
               <div className="relative">
-                <Icon
-                  name="lock"
-                  size="sm"
-                  className="absolute start-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-                />
+                <div className="absolute inset-y-0 start-0 flex items-center justify-center ps-3.5 pointer-events-none text-muted-foreground">
+                  <Icon name="lock" size="default" />
+                </div>
                 <Input
                   id="password"
                   name="password"
@@ -118,7 +114,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="ps-10 h-12 rounded-2xl"
+                  className="ps-11 h-12 rounded-2xl"
                   disabled={loading}
                 />
               </div>
