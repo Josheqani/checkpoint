@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build:worker": "opennextjs-cloudflare build",
+    "build:worker": "opennextjs-cloudflare build && node scripts/inject-cron-handler.mjs",
     "preview": "opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && wrangler deploy",
+    "deploy": "opennextjs-cloudflare build && node scripts/inject-cron-handler.mjs && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {

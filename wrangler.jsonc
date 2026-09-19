@@ -31,5 +31,8 @@
 			"database_id": "cb62c9a1-276d-4aa2-99c3-08cb88fed6d3",
 			"migrations_dir": "drizzle"
 		}
-	]
+	],
+	"triggers": {
+		"crons": ["*/5 * * * *"]
+	}
 }

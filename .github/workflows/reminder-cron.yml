@@ -1,9 +1,8 @@
 name: Check Reminders Cron
 
 on:
-  schedule:
-    # Trigger every 15 minutes
-    - cron: '*/15 * * * *'
+  # Scheduled execution is now handled natively on Cloudflare Workers edge (every 5 minutes)
+  # workflow_dispatch allows manual testing via GitHub UI if ever needed
   workflow_dispatch:
 
 jobs:

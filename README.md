@@ -234,47 +234,29 @@ Your app will be live at `https://checkpoint.<your-subdomain>.workers.dev` (or y
 
 ---
 
-## ⏰ Automated Reminder Scheduler (Cron Setup)
+## ⏰ Automated Reminder Scheduler (Cloudflare Native Cron)
 
-Checkpoint provides an edge-optimized endpoint:
-`POST /api/check-reminders`
+Checkpoint executes automated reminder checks **natively on the Cloudflare Workers edge** every 5 minutes (`*/5 * * * *`).
 
-This endpoint checks for due reminders, evaluates active schedules against the current Tehran time (`Asia/Tehran`), dispatches SMS messages via SMS.ir, and updates the delivery audit log. It is secured by a Bearer token matching `CRON_SECRET`.
+- **Zero External Dependencies**: Cloudflare triggers the Worker's `scheduled` handler automatically on the exact minute with sub-millisecond precision.
+- **Edge Security**: Runs internally on Cloudflare's network, invoking `/api/check-reminders` directly.
+- **Quota-Friendly**: Uses only 288 runs/day out of Cloudflare's 100,000 free daily requests.
 
-You can trigger this check on any interval (recommended: **every 15 minutes** or **every hour**).
+### Configuration (`wrangler.jsonc`)
 
-### Option A: External Webhook (cron-job.org or EasyCron)
-1. Create a free account on [cron-job.org](https://cron-job.org).
-2. Add a new cron job:
-   - **URL**: `https://your-domain.workers.dev/api/check-reminders`
-   - **Method**: `POST`
-   - **Schedule**: Every 15 minutes (`*/15 * * * *`)
-   - **Headers**:
-     ```http
-     Authorization: Bearer YOUR_CRON_SECRET
-     Content-Type: application/json
-     ```
+The schedule is pre-configured in [`wrangler.jsonc`](wrangler.jsonc):
 
-### Option B: GitHub Actions Scheduled Workflow
-Create `.github/workflows/check-reminders.yml`:
-
-```yaml
-name: Check Reminders Cron
-on:
-  schedule:
-    - cron: '*/15 * * * *'
-  workflow_dispatch:
-
-jobs:
-  ping-checkpoint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Reminders Endpoint
-        run: |
-          curl -X POST https://your-domain.workers.dev/api/check-reminders \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            -H "Content-Type: application/json"
+```jsonc
+"triggers": {
+  "crons": ["*/5 * * * *"] // Runs every 5 minutes on Cloudflare Edge
+}
 ```
+
+### Manual Trigger / External Webhook (Optional)
+
+You can also trigger the endpoint manually or via any webhook service:
+- **Endpoint**: `POST https://your-domain.workers.dev/api/check-reminders`
+- **Header**: `Authorization: Bearer <CRON_SECRET>`
 
 ---
 
