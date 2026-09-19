@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Fab } from "@/components/ui/fab";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ReminderItemCard } from "@/components/reminders/reminder-item";
@@ -316,6 +317,19 @@ export default function GoalDetailPage({ params }: GoalDetailPageProps) {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Floating Action Button (FAB) elevated above MobileNav on mobile */}
+          <div className="fixed bottom-20 end-5 z-40 sm:hidden">
+            <Fab
+              variant="primary"
+              size="default"
+              onClick={handleAddReminder}
+              aria-label={t("reminders.addReminder")}
+              className="shadow-xl hover:shadow-2xl active:shadow-md"
+            >
+              <Plus className="w-6 h-6" />
+            </Fab>
           </div>
         </>
       )}

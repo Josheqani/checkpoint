@@ -165,14 +165,14 @@ export default function GoalsPage() {
         </div>
       )}
 
-      {/* Floating Action Button (FAB) for mobile viewports */}
-      <div className="fixed bottom-6 end-6 z-40 sm:hidden">
+      {/* Floating Action Button (FAB) elevated above MobileNav on mobile */}
+      <div className="fixed bottom-20 end-5 z-40 sm:hidden">
         <Fab
           variant="primary"
           size="default"
           onClick={handleCreateOpen}
           aria-label={t("newGoal")}
-          className="shadow-lg hover:shadow-xl active:shadow-md"
+          className="shadow-xl hover:shadow-2xl active:shadow-md"
         >
           <Plus className="w-6 h-6" />
         </Fab>
