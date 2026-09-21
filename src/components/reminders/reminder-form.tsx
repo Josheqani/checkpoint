@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Loader2, Calendar, Repeat, Sparkles, Smartphone, Send } from "lucide-react";
+import { Loader2, Calendar, Repeat, Smartphone, Send, ExternalLink } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import {
   Form,
   FormControl,
@@ -14,48 +15,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CustomDatePicker } from "@/components/ui/custom-date-picker";
-import { TelegramConnectCard } from "@/components/telegram/telegram-connect-card";
 import { useSettings } from "@/lib/settings-context";
-import { iranianPhoneRegex } from "@/lib/validations/reminder";
 import type { ReminderItem, RecurrencePattern } from "@/types/reminder";
 
 const reminderFormSchema = z
   .object({
     channel: z.enum(["sms", "telegram"]),
-    phoneNumber: z.string().optional(),
-    telegramChatId: z.string().optional(),
     scheduleType: z.enum(["once", "recurring"]),
     scheduledAt: z.string().optional(),
     daysOfWeek: z.array(z.number().int().min(0).max(6)).optional(),
     time: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.channel === "sms") {
-      const cleanPhone = (data.phoneNumber || "").trim().replace(/[\s-]/g, "");
-      if (!cleanPhone || !iranianPhoneRegex.test(cleanPhone)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "phoneInvalid",
-          path: ["phoneNumber"],
-        });
-      }
-    } else if (data.channel === "telegram") {
-      const cleanChatId = (data.telegramChatId || "").trim();
-      if (!cleanChatId) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "telegramChatIdRequired",
-          path: ["telegramChatId"],
-        });
-      }
-    }
-
     if (data.scheduleType === "once") {
       if (!data.scheduledAt || data.scheduledAt.trim() === "") {
         ctx.addIssue({
@@ -126,7 +102,15 @@ export function ReminderForm({
   const [submitting, setSubmitting] = useState(false);
 
   const isEditing = Boolean(reminder && reminder.id);
-  const { defaultPhoneNumber, defaultTelegramChatId } = useSettings();
+  const {
+    defaultPhoneNumber,
+    defaultTelegramChatId,
+    defaultTelegramUsername,
+  } = useSettings();
+
+  const activePhone = reminder?.phoneNumber || defaultPhoneNumber;
+  const activeTelegramChatId = reminder?.telegramChatId || defaultTelegramChatId;
+  const activeTelegramUsername = defaultTelegramUsername;
 
   // Parse recurrence pattern if editing
   const initialPattern: RecurrencePattern | null = (() => {
@@ -140,14 +124,14 @@ export function ReminderForm({
     }
   })();
 
-  const initialChannel = reminder?.channel ?? (defaultTelegramChatId && !defaultPhoneNumber ? "telegram" : "sms");
+  const initialChannel =
+    reminder?.channel ??
+    (defaultTelegramChatId && !defaultPhoneNumber ? "telegram" : "sms");
 
   const form = useForm<ReminderFormValues>({
     resolver: zodResolver(reminderFormSchema),
     defaultValues: {
       channel: initialChannel,
-      phoneNumber: reminder?.phoneNumber || (!isEditing ? defaultPhoneNumber : ""),
-      telegramChatId: reminder?.telegramChatId || (!isEditing ? defaultTelegramChatId : ""),
       scheduleType: reminder?.scheduleType ?? "once",
       scheduledAt: toDateTimeLocalString(reminder?.scheduledAt),
       daysOfWeek: initialPattern?.daysOfWeek ?? [1, 2, 3, 4, 5],
@@ -160,9 +144,9 @@ export function ReminderForm({
 
   useEffect(() => {
     form.reset({
-      channel: reminder?.channel ?? (defaultTelegramChatId && !defaultPhoneNumber ? "telegram" : "sms"),
-      phoneNumber: reminder?.phoneNumber || (!isEditing ? defaultPhoneNumber : ""),
-      telegramChatId: reminder?.telegramChatId || (!isEditing ? defaultTelegramChatId : ""),
+      channel:
+        reminder?.channel ??
+        (defaultTelegramChatId && !defaultPhoneNumber ? "telegram" : "sms"),
       scheduleType: reminder?.scheduleType ?? "once",
       scheduledAt: toDateTimeLocalString(reminder?.scheduledAt),
       daysOfWeek: initialPattern?.daysOfWeek ?? [1, 2, 3, 4, 5],
@@ -171,12 +155,21 @@ export function ReminderForm({
   }, [reminder, form, initialPattern, isEditing, defaultPhoneNumber, defaultTelegramChatId]);
 
   const onSubmit = async (values: ReminderFormValues) => {
+    if (values.channel === "sms" && !activePhone) {
+      toast.error(t("form.errors.phoneMissing"));
+      return;
+    }
+    if (values.channel === "telegram" && !activeTelegramChatId) {
+      toast.error(t("form.errors.telegramMissing"));
+      return;
+    }
+
     setSubmitting(true);
     try {
       const payload: Record<string, any> = {
         channel: values.channel,
-        phoneNumber: values.channel === "sms" ? (values.phoneNumber || "").trim() : "",
-        telegramChatId: values.channel === "telegram" ? (values.telegramChatId || "").trim() : null,
+        phoneNumber: values.channel === "sms" ? activePhone : "",
+        telegramChatId: values.channel === "telegram" ? activeTelegramChatId : null,
         scheduleType: values.scheduleType,
       };
 
@@ -221,10 +214,6 @@ export function ReminderForm({
   const getErrorMessage = (errorKey?: string) => {
     if (!errorKey) return undefined;
     switch (errorKey) {
-      case "phoneInvalid":
-        return t("form.errors.phoneInvalid");
-      case "telegramChatIdRequired":
-        return t("form.errors.telegramChatIdRequired");
       case "dateRequired":
         return t("form.errors.dateRequired");
       case "dateFuture":
@@ -268,72 +257,77 @@ export function ReminderForm({
           </div>
         </div>
 
-        {/* Phone number field (SMS) */}
+        {/* Read-only SMS Recipient Info */}
         {channel === "sms" && (
-          <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <div className="flex items-center justify-between gap-2">
-                  <FormLabel>{t("form.phoneLabel")}</FormLabel>
-                  {defaultPhoneNumber && field.value !== defaultPhoneNumber && (
-                    <button
-                      type="button"
-                      onClick={() => field.onChange(defaultPhoneNumber)}
-                      className="text-[11px] text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>
-                        {t("form.useDefaultPhone", { phone: defaultPhoneNumber })}
-                      </span>
-                    </button>
-                  )}
+          <div className="p-3.5 rounded-2xl bg-surface border border-outline-variant/30 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <Smartphone className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">
+                  {t("form.smsRecipientLabel")}
                 </div>
-                <FormControl>
-                  <Input
-                    placeholder={t("form.phonePlaceholder")}
-                    disabled={submitting}
-                    dir="ltr"
-                    className="font-mono text-start"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription className="text-xs">
-                  {t("form.phoneHint")}
-                </FormDescription>
-                {fieldState.error && (
-                  <FormMessage>
-                    {getErrorMessage(fieldState.error.message)}
-                  </FormMessage>
+                {activePhone ? (
+                  <div className="text-sm font-semibold font-mono text-foreground" dir="ltr">
+                    {activePhone}
+                  </div>
+                ) : (
+                  <div className="text-xs text-amber-500 font-medium">
+                    {t("form.noPhoneConfigured")}
+                  </div>
                 )}
-              </FormItem>
-            )}
-          />
+              </div>
+            </div>
+            <Link
+              href="/settings"
+              onClick={onCancel}
+              className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1 shrink-0"
+            >
+              <span>{t("form.editInSettings")}</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          </div>
         )}
 
-        {/* Telegram Chat ID field (Telegram) */}
+        {/* Read-only Telegram Recipient Info */}
         {channel === "telegram" && (
-          <FormField
-            control={form.control}
-            name="telegramChatId"
-            render={({ field, fieldState }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>{t("form.telegramChatIdLabel")}</FormLabel>
-                <TelegramConnectCard
-                  onConnected={(chatId) => {
-                    field.onChange(chatId);
-                    form.setValue("telegramChatId", chatId, { shouldValidate: true });
-                  }}
-                />
-                {fieldState.error && (
-                  <FormMessage>
-                    {getErrorMessage(fieldState.error.message)}
-                  </FormMessage>
+          <div className="p-3.5 rounded-2xl bg-surface border border-outline-variant/30 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0">
+                <Send className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">
+                  {t("form.telegramRecipientLabel")}
+                </div>
+                {activeTelegramChatId ? (
+                  <div className="text-sm font-semibold flex items-center gap-1.5 flex-wrap">
+                    {activeTelegramUsername && (
+                      <span className="text-sky-600 dark:text-sky-400 font-mono font-medium">
+                        @{activeTelegramUsername}
+                      </span>
+                    )}
+                    <span className="font-mono text-xs text-muted-foreground" dir="ltr">
+                      (ID: {activeTelegramChatId})
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-xs text-amber-500 font-medium">
+                    {t("form.noTelegramConfigured")}
+                  </div>
                 )}
-              </FormItem>
-            )}
-          />
+              </div>
+            </div>
+            <Link
+              href="/settings"
+              onClick={onCancel}
+              className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1 shrink-0"
+            >
+              <span>{t("form.editInSettings")}</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          </div>
         )}
 
         {/* Schedule type toggle */}
@@ -477,7 +471,15 @@ export function ReminderForm({
           >
             {t("form.cancel")}
           </Button>
-          <Button type="submit" disabled={submitting} className="cursor-pointer">
+          <Button
+            type="submit"
+            disabled={
+              submitting ||
+              (channel === "sms" && !activePhone) ||
+              (channel === "telegram" && !activeTelegramChatId)
+            }
+            className="cursor-pointer"
+          >
             {submitting ? (
               <>
                 <Loader2 className="w-4 h-4 me-2 animate-spin" />

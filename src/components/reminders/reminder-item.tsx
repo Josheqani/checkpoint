@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { formatScheduleSummary } from "@/lib/format-schedule";
+import { useSettings } from "@/lib/settings-context";
 import type { ReminderItem } from "@/types/reminder";
 
 interface ReminderItemProps {
@@ -23,8 +24,14 @@ export function ReminderItemCard({
 }: ReminderItemProps) {
   const t = useTranslations();
   const locale = useLocale();
+  const { defaultTelegramChatId, defaultTelegramUsername } = useSettings();
 
   const summary = formatScheduleSummary(reminder, locale, t);
+
+  const displayTelegramUser =
+    reminder.telegramChatId === defaultTelegramChatId && defaultTelegramUsername
+      ? `@${defaultTelegramUsername}`
+      : null;
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-outline-variant/40 bg-surface-container-low hover:border-outline-variant/70 hover:shadow-xs transition-all duration-150 gap-4">
@@ -34,7 +41,11 @@ export function ReminderItemCard({
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30 font-mono text-xs font-semibold tracking-wide">
               <Send className="w-3 h-3" />
               <span>Telegram:</span>
-              <span dir="ltr">{reminder.telegramChatId || "-"}</span>
+              {displayTelegramUser ? (
+                <span>{displayTelegramUser}</span>
+              ) : (
+                <span dir="ltr">{reminder.telegramChatId || "-"}</span>
+              )}
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-foreground border border-outline-variant/40 font-mono text-xs font-semibold tracking-wide">

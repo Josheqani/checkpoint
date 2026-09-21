@@ -153,3 +153,64 @@ export async function setTelegramWebhook(
   }
 }
 
+export interface TelegramChatResult {
+  ok: boolean;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  error?: string;
+}
+
+/**
+ * Resolves a Telegram Chat ID to its user info (username, firstName) using getChat.
+ */
+export async function resolveTelegramChat(
+  env: Partial<CloudflareEnv> | undefined,
+  chatId: string | number
+): Promise<TelegramChatResult> {
+  const token = getTelegramBotToken(env);
+  if (!token) {
+    return { ok: false, error: "TELEGRAM_BOT_TOKEN is not configured" };
+  }
+
+  const cleanChatId = String(chatId).trim();
+  if (!cleanChatId) {
+    return { ok: false, error: "Missing Chat ID" };
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${token}/getChat?chat_id=${cleanChatId}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    const data = (await res.json()) as {
+      ok: boolean;
+      description?: string;
+      result?: {
+        id: number;
+        first_name?: string;
+        last_name?: string;
+        username?: string;
+      };
+    };
+
+    if (!data.ok || !data.result) {
+      return { ok: false, error: data.description || "Could not find chat" };
+    }
+
+    return {
+      ok: true,
+      username: data.result.username,
+      firstName: data.result.first_name,
+      lastName: data.result.last_name,
+    };
+  } catch (err: any) {
+    return { ok: false, error: err.message || "Network error resolving chat" };
+  }
+}
+
+
