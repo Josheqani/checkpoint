@@ -84,9 +84,30 @@ export const sentLogRelations = relations(sentLog, ({ one }) => ({
   }),
 }));
 
+export const telegramConnections = sqliteTable(
+  "telegram_connections",
+  {
+    token: text("token").primaryKey(),
+    chatId: text("chat_id"),
+    username: text("username"),
+    firstName: text("first_name"),
+    status: text("status", { enum: ["pending", "connected", "expired"] })
+      .notNull()
+      .default("pending"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  },
+  (table) => [index("telegram_connections_status_idx").on(table.status)]
+);
+
 export type Goal = typeof goals.$inferSelect;
 export type NewGoal = typeof goals.$inferInsert;
 export type Reminder = typeof reminders.$inferSelect;
 export type NewReminder = typeof reminders.$inferInsert;
 export type SentLog = typeof sentLog.$inferSelect;
 export type NewSentLog = typeof sentLog.$inferInsert;
+export type TelegramConnection = typeof telegramConnections.$inferSelect;
+export type NewTelegramConnection = typeof telegramConnections.$inferInsert;
+

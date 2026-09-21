@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Loader2, Calendar, Repeat, Sparkles, Smartphone, Send, ExternalLink } from "lucide-react";
+import { Loader2, Calendar, Repeat, Sparkles, Smartphone, Send } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CustomDatePicker } from "@/components/ui/custom-date-picker";
+import { TelegramConnectCard } from "@/components/telegram/telegram-connect-card";
 import { useSettings } from "@/lib/settings-context";
 import { iranianPhoneRegex } from "@/lib/validations/reminder";
 import type { ReminderItem, RecurrencePattern } from "@/types/reminder";
@@ -123,22 +124,9 @@ export function ReminderForm({
   const locale = useLocale();
   const isRtl = locale === "fa";
   const [submitting, setSubmitting] = useState(false);
-  const [botUsername, setBotUsername] = useState<string | null>(null);
-  const [testingTelegram, setTestingTelegram] = useState(false);
 
   const isEditing = Boolean(reminder && reminder.id);
   const { defaultPhoneNumber, defaultTelegramChatId } = useSettings();
-
-  useEffect(() => {
-    fetch("/api/telegram/info")
-      .then((res) => res.json())
-      .then((data: any) => {
-        if (data.isConfigured && data.botUsername) {
-          setBotUsername(data.botUsername);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   // Parse recurrence pattern if editing
   const initialPattern: RecurrencePattern | null = (() => {
@@ -181,30 +169,6 @@ export function ReminderForm({
       time: initialPattern?.time ?? "09:00",
     });
   }, [reminder, form, initialPattern, isEditing, defaultPhoneNumber, defaultTelegramChatId]);
-
-  const handleTestTelegram = async (chatId?: string) => {
-    if (!chatId || !chatId.trim()) {
-      toast.error(t("form.errors.telegramChatIdRequired"));
-      return;
-    }
-    setTestingTelegram(true);
-    try {
-      const res = await fetch("/api/telegram/test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatId: chatId.trim() }),
-      });
-      const data = (await res.json()) as any;
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed");
-      }
-      toast.success(t("form.testSuccess"));
-    } catch (err: any) {
-      toast.error(t("form.testError") + (err.message ? `: ${err.message}` : ""));
-    } finally {
-      setTestingTelegram(false);
-    }
-  };
 
   const onSubmit = async (values: ReminderFormValues) => {
     setSubmitting(true);
@@ -354,63 +318,14 @@ export function ReminderForm({
             control={form.control}
             name="telegramChatId"
             render={({ field, fieldState }) => (
-              <FormItem>
-                <div className="flex items-center justify-between gap-2">
-                  <FormLabel>{t("form.telegramChatIdLabel")}</FormLabel>
-                  {defaultTelegramChatId && field.value !== defaultTelegramChatId && (
-                    <button
-                      type="button"
-                      onClick={() => field.onChange(defaultTelegramChatId)}
-                      className="text-[11px] text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>
-                        {t("form.useDefaultTelegram", { chatId: defaultTelegramChatId })}
-                      </span>
-                    </button>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <FormControl>
-                    <Input
-                      placeholder={t("form.telegramChatIdPlaceholder")}
-                      disabled={submitting}
-                      dir="ltr"
-                      className="font-mono text-start"
-                      {...field}
-                    />
-                  </FormControl>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={testingTelegram || !field.value}
-                    onClick={() => handleTestTelegram(field.value)}
-                    className="shrink-0 cursor-pointer h-10 px-3"
-                  >
-                    {testingTelegram ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      t("form.testButton")
-                    )}
-                  </Button>
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                  <FormDescription className="text-xs">
-                    {t("form.telegramChatIdHint")}
-                  </FormDescription>
-                  {botUsername && (
-                    <a
-                      href={`https://t.me/${botUsername}?start=checkpoint`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1 shrink-0"
-                    >
-                      <span>{t("form.openBot")}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
+              <FormItem className="space-y-2">
+                <FormLabel>{t("form.telegramChatIdLabel")}</FormLabel>
+                <TelegramConnectCard
+                  onConnected={(chatId) => {
+                    field.onChange(chatId);
+                    form.setValue("telegramChatId", chatId, { shouldValidate: true });
+                  }}
+                />
                 {fieldState.error && (
                   <FormMessage>
                     {getErrorMessage(fieldState.error.message)}

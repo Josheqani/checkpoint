@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSettings, type CalendarType } from "@/lib/settings-context";
+import { TelegramConnectCard } from "@/components/telegram/telegram-connect-card";
 import { iranianPhoneRegex } from "@/lib/validations/reminder";
 import * as jalaali from "jalaali-js";
 
@@ -46,14 +47,11 @@ export default function SettingsPage() {
     setCalendarType,
     defaultPhoneNumber,
     setDefaultPhoneNumber,
-    defaultTelegramChatId,
-    setDefaultTelegramChatId,
   } = useSettings();
 
   const [phoneInput, setPhoneInput] = React.useState(defaultPhoneNumber);
   const [phoneError, setPhoneError] = React.useState<string | null>(null);
 
-  const [telegramInput, setTelegramInput] = React.useState(defaultTelegramChatId);
   const [botInfo, setBotInfo] = React.useState<{
     isConfigured: boolean;
     botUsername?: string | null;
@@ -61,15 +59,10 @@ export default function SettingsPage() {
     error?: string | null;
   } | null>(null);
   const [loadingBot, setLoadingBot] = React.useState(true);
-  const [testingTelegram, setTestingTelegram] = React.useState(false);
 
   React.useEffect(() => {
     setPhoneInput(defaultPhoneNumber);
   }, [defaultPhoneNumber]);
-
-  React.useEffect(() => {
-    setTelegramInput(defaultTelegramChatId);
-  }, [defaultTelegramChatId]);
 
   React.useEffect(() => {
     fetch("/api/telegram/info")
@@ -99,38 +92,6 @@ export default function SettingsPage() {
         ? "شماره همراه پیش‌فرض در حافظه مرورگر ذخیره شد"
         : "Default phone number saved locally"
     );
-  };
-
-  const handleSaveTelegram = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleaned = telegramInput.trim();
-    setDefaultTelegramChatId(cleaned);
-    toast.success(t("telegramSaved"));
-  };
-
-  const handleSendTestNotification = async () => {
-    const chatId = telegramInput.trim();
-    if (!chatId) {
-      toast.error(isFa ? "لطفاً شناسه چت تلگرام را وارد کنید" : "Please enter a Telegram Chat ID");
-      return;
-    }
-    setTestingTelegram(true);
-    try {
-      const res = await fetch("/api/telegram/test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatId }),
-      });
-      const data = (await res.json()) as any;
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed");
-      }
-      toast.success(t("telegramTestSuccess"));
-    } catch (err: any) {
-      toast.error(t("telegramTestError") + (err.message ? `: ${err.message}` : ""));
-    } finally {
-      setTestingTelegram(false);
-    }
   };
 
   const handleSelectCalendar = (type: CalendarType) => {
@@ -343,89 +304,7 @@ export default function SettingsPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-5">
-            {/* Instruction steps */}
-            <div className="p-4 rounded-2xl bg-surface border border-outline-variant/30 space-y-3">
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <Bot className="w-4 h-4 text-sky-500" />
-                  <span>
-                    {isFa
-                      ? "چگونه Chat ID خود را دریافت کنیم؟"
-                      : "How to find your Telegram Chat ID?"}
-                  </span>
-                </div>
-                {botInfo?.botUsername && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8 gap-1.5 text-xs text-sky-600 dark:text-sky-400 border-sky-500/30 hover:bg-sky-500/10 cursor-pointer"
-                    onClick={() =>
-                      window.open(
-                        `https://t.me/${botInfo.botUsername}?start=checkpoint`,
-                        "_blank",
-                        "noopener,noreferrer"
-                      )
-                    }
-                  >
-                    <span>{t("telegramOpenBotButton")}</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </Button>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {t("telegramChatIdHint")}
-              </p>
-            </div>
-
-            {/* Chat ID form */}
-            <form onSubmit={handleSaveTelegram} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="defaultTelegramChatId" className="text-xs font-medium">
-                  {t("telegramChatIdLabel")}
-                </Label>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <Input
-                    id="defaultTelegramChatId"
-                    dir="ltr"
-                    placeholder="123456789"
-                    value={telegramInput}
-                    onChange={(e) => setTelegramInput(e.target.value)}
-                    className="font-mono text-start flex-1"
-                  />
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className="rounded-full cursor-pointer gap-1.5 h-10 px-4"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>{t("telegramSaveButton")}</span>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={testingTelegram || !telegramInput.trim()}
-                      onClick={handleSendTestNotification}
-                      className="rounded-full cursor-pointer gap-1.5 h-10 px-4"
-                    >
-                      {testingTelegram ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>{t("telegramTesting")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-3.5 h-3.5 text-sky-500" />
-                          <span>{t("telegramSendTestButton")}</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </form>
+            <TelegramConnectCard />
           </CardContent>
         </Card>
       </div>

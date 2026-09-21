@@ -12,6 +12,8 @@ export interface SettingsContextType {
   setDefaultPhoneNumber: (phone: string) => void;
   defaultTelegramChatId: string;
   setDefaultTelegramChatId: (chatId: string) => void;
+  defaultTelegramUsername: string;
+  setDefaultTelegramUsername: (username: string) => void;
   isLoaded: boolean;
 }
 
@@ -22,12 +24,16 @@ const SettingsContext = React.createContext<SettingsContextType>({
   setDefaultPhoneNumber: () => {},
   defaultTelegramChatId: "",
   setDefaultTelegramChatId: () => {},
+  defaultTelegramUsername: "",
+  setDefaultTelegramUsername: () => {},
   isLoaded: false,
 });
 
 export const CALENDAR_STORAGE_KEY = "checkpoint_calendar_type";
 export const DEFAULT_PHONE_STORAGE_KEY = "checkpoint_default_phone";
 export const DEFAULT_TELEGRAM_STORAGE_KEY = "checkpoint_default_telegram_chat_id";
+export const DEFAULT_TELEGRAM_USERNAME_STORAGE_KEY = "checkpoint_default_telegram_username";
+
 
 export function SettingsProvider({
   children,
@@ -49,6 +55,7 @@ export function SettingsProvider({
   const [calendarType, setCalendarTypeState] = React.useState<CalendarType>(defaultCalendar);
   const [defaultPhoneNumber, setDefaultPhoneNumberState] = React.useState<string>("");
   const [defaultTelegramChatId, setDefaultTelegramChatIdState] = React.useState<string>("");
+  const [defaultTelegramUsername, setDefaultTelegramUsernameState] = React.useState<string>("");
   const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -69,6 +76,11 @@ export function SettingsProvider({
       if (savedTelegram) {
         setDefaultTelegramChatIdState(savedTelegram);
       }
+
+      const savedUsername = localStorage.getItem(DEFAULT_TELEGRAM_USERNAME_STORAGE_KEY);
+      if (savedUsername) {
+        setDefaultTelegramUsernameState(savedUsername);
+      }
     } catch {
       // localStorage might be unavailable
     } finally {
@@ -84,6 +96,9 @@ export function SettingsProvider({
       }
       if (e.key === DEFAULT_TELEGRAM_STORAGE_KEY && e.newValue !== null) {
         setDefaultTelegramChatIdState(e.newValue);
+      }
+      if (e.key === DEFAULT_TELEGRAM_USERNAME_STORAGE_KEY && e.newValue !== null) {
+        setDefaultTelegramUsernameState(e.newValue);
       }
     };
 
@@ -118,6 +133,15 @@ export function SettingsProvider({
     }
   }, []);
 
+  const setDefaultTelegramUsername = React.useCallback((username: string) => {
+    setDefaultTelegramUsernameState(username);
+    try {
+      localStorage.setItem(DEFAULT_TELEGRAM_USERNAME_STORAGE_KEY, username);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   return (
     <SettingsContext.Provider
       value={{
@@ -127,6 +151,8 @@ export function SettingsProvider({
         setDefaultPhoneNumber,
         defaultTelegramChatId,
         setDefaultTelegramChatId,
+        defaultTelegramUsername,
+        setDefaultTelegramUsername,
         isLoaded,
       }}
     >

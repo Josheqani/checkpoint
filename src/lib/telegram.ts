@@ -122,3 +122,34 @@ export async function sendTelegramMessage(
     };
   }
 }
+
+/**
+ * Automatically registers or verifies the webhook URL with Telegram.
+ */
+export async function setTelegramWebhook(
+  env: Partial<CloudflareEnv> | undefined,
+  webhookUrl: string
+): Promise<{ ok: boolean; error?: string }> {
+  const token = getTelegramBotToken(env);
+  if (!token) {
+    return { ok: false, error: "TELEGRAM_BOT_TOKEN is not configured" };
+  }
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: webhookUrl }),
+    });
+
+    const data = (await res.json()) as { ok: boolean; description?: string };
+    if (!data.ok) {
+      return { ok: false, error: data.description || "Failed to set webhook" };
+    }
+
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, error: err.message || "Network error setting webhook" };
+  }
+}
+
