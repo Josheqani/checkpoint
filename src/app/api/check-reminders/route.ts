@@ -10,6 +10,7 @@ import {
   isReminderDue,
 } from "@/lib/reminder-matching";
 import { sendSms } from "@/lib/sms";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,9 @@ export async function POST(request: NextRequest) {
         id: reminders.id,
         goalId: reminders.goalId,
         goalTitle: goals.title,
+        channel: reminders.channel,
         phoneNumber: reminders.phoneNumber,
+        telegramChatId: reminders.telegramChatId,
         scheduleType: reminders.scheduleType,
         scheduledAt: reminders.scheduledAt,
         recurrencePattern: reminders.recurrencePattern,
@@ -122,31 +125,48 @@ export async function POST(request: NextRequest) {
     let sentCount = 0;
     let failedCount = 0;
 
-    // 5. Dispatch SMS for each due reminder and record sent_log
+    // 5. Dispatch SMS or Telegram for each due reminder and record sent_log
     for (const reminder of dueReminders) {
       try {
-        const message = `یادآوری چک‌پوینت: ${reminder.goalTitle}`;
-        const smsResult = await sendSms(env, reminder.phoneNumber, message);
+        const isTelegram = reminder.channel === "telegram";
+        let sendSuccess = false;
+        let sendError: string | null = null;
+        const targetIdentifier = isTelegram
+          ? (reminder.telegramChatId || "unknown")
+          : reminder.phoneNumber;
 
-        const status = smsResult.success ? "sent" : "failed";
-        const errorCode = smsResult.success ? null : smsResult.error || "UNKNOWN_ERROR";
+        if (isTelegram) {
+          const message = `🎯 <b>یادآوری چک‌پوینت</b>\n\n📌 <b>هدف:</b> ${reminder.goalTitle}\n\nزمان آن رسیده است که این گام را بررسی و ثبت کنید.`;
+          const tgResult = await sendTelegramMessage(env, reminder.telegramChatId!, message);
+          sendSuccess = tgResult.success;
+          sendError = tgResult.error || null;
+        } else {
+          const message = `یادآوری چک‌پوینت: ${reminder.goalTitle}`;
+          const smsResult = await sendSms(env, reminder.phoneNumber, message);
+          sendSuccess = smsResult.success;
+          sendError = smsResult.error || null;
+        }
+
+        const status = sendSuccess ? "sent" : "failed";
+        const errorCode = sendSuccess ? null : sendError || "UNKNOWN_ERROR";
 
         await db.insert(sentLog).values({
           id: crypto.randomUUID(),
           reminderId: reminder.id,
-          phoneNumber: reminder.phoneNumber,
+          channel: reminder.channel || "sms",
+          phoneNumber: targetIdentifier,
           status,
           errorCode,
           sentAt: new Date(),
         });
 
-        if (smsResult.success) {
+        if (sendSuccess) {
           sentCount++;
         } else {
           failedCount++;
           console.error(
-            `Failed to send SMS for reminder ${reminder.id} to ${reminder.phoneNumber}:`,
-            smsResult.error
+            `Failed to dispatch reminder ${reminder.id} (${reminder.channel}) to ${targetIdentifier}:`,
+            sendError
           );
         }
       } catch (err) {

@@ -16,11 +16,14 @@ export interface RecurrencePattern {
 }
 
 export type ScheduleType = "once" | "recurring";
+export type ReminderChannel = "sms" | "telegram";
 
 export interface ReminderItem {
   id: string;
   goalId: string;
+  channel?: ReminderChannel;
   phoneNumber: string;
+  telegramChatId?: string | null;
   scheduleType: ScheduleType;
   scheduledAt: string | number | null;
   recurrencePattern: string | null;

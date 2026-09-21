@@ -60,6 +60,11 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // 3. Explicitly bypass Telegram incoming webhook
+  if (pathname === "/api/telegram/webhook") {
+    return NextResponse.next();
+  }
+
   // Check if target is a login page (/login, /en/login, /fa/login)
   const isLoginPage =
     pathname === "/login" ||

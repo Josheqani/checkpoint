@@ -59,7 +59,9 @@ export const recurrencePatternSchema = z.union([
 
 export const createReminderSchema = z
   .object({
-    phoneNumber: phoneNumberSchema,
+    channel: z.enum(["sms", "telegram"]).optional().default("sms"),
+    phoneNumber: z.string().optional().default(""),
+    telegramChatId: z.string().optional().nullable(),
     scheduleType: z.enum(["once", "recurring"]),
     scheduledAt: z
       .union([
@@ -77,6 +79,26 @@ export const createReminderSchema = z
     isActive: z.boolean().optional().default(true),
   })
   .superRefine((data, ctx) => {
+    if (data.channel === "sms") {
+      const cleanPhone = (data.phoneNumber || "").replace(/[\s-]/g, "");
+      if (!cleanPhone || !iranianPhoneRegex.test(cleanPhone)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "Invalid phone number. Must be Iranian mobile (e.g. 09123456789 or +989123456789)",
+          path: ["phoneNumber"],
+        });
+      }
+    } else if (data.channel === "telegram") {
+      if (!data.telegramChatId || data.telegramChatId.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Telegram Chat ID is required",
+          path: ["telegramChatId"],
+        });
+      }
+    }
+
     if (data.scheduleType === "once") {
       if (!data.scheduledAt) {
         ctx.addIssue({
@@ -104,7 +126,9 @@ export const createReminderSchema = z
 
 export const updateReminderSchema = z
   .object({
-    phoneNumber: phoneNumberSchema.optional(),
+    channel: z.enum(["sms", "telegram"]).optional(),
+    phoneNumber: z.string().optional(),
+    telegramChatId: z.string().optional().nullable(),
     scheduleType: z.enum(["once", "recurring"]).optional(),
     scheduledAt: z
       .union([
@@ -122,6 +146,25 @@ export const updateReminderSchema = z
     isActive: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
+    if (data.channel === "sms" && data.phoneNumber !== undefined) {
+      const cleanPhone = data.phoneNumber.replace(/[\s-]/g, "");
+      if (!cleanPhone || !iranianPhoneRegex.test(cleanPhone)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid phone number",
+          path: ["phoneNumber"],
+        });
+      }
+    } else if (data.channel === "telegram" && data.telegramChatId !== undefined) {
+      if (!data.telegramChatId || data.telegramChatId.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Telegram Chat ID is required",
+          path: ["telegramChatId"],
+        });
+      }
+    }
+
     if (data.scheduleType === "once") {
       if (data.scheduledAt && data.scheduledAt.getTime() <= Date.now()) {
         ctx.addIssue({
@@ -135,3 +178,4 @@ export const updateReminderSchema = z
 
 export type CreateReminderInput = z.infer<typeof createReminderSchema>;
 export type UpdateReminderInput = z.infer<typeof updateReminderSchema>;
+

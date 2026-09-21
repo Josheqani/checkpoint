@@ -87,7 +87,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const newReminder = {
       id: crypto.randomUUID(),
       goalId,
-      phoneNumber: parsed.data.phoneNumber,
+      channel: parsed.data.channel ?? "sms",
+      phoneNumber: parsed.data.phoneNumber || "",
+      telegramChatId: parsed.data.telegramChatId || null,
       scheduleType: parsed.data.scheduleType,
       scheduledAt:
         parsed.data.scheduleType === "once" ? parsed.data.scheduledAt : null,

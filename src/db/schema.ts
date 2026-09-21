@@ -25,7 +25,9 @@ export const reminders = sqliteTable(
     goalId: text("goal_id")
       .notNull()
       .references(() => goals.id, { onDelete: "cascade" }),
-    phoneNumber: text("phone_number").notNull(),
+    channel: text("channel", { enum: ["sms", "telegram"] }).notNull().default("sms"),
+    phoneNumber: text("phone_number").notNull().default(""),
+    telegramChatId: text("telegram_chat_id"),
     scheduleType: text("schedule_type", { enum: ["once", "recurring"] }).notNull(),
     scheduledAt: integer("scheduled_at", { mode: "timestamp" }),
     recurrencePattern: text("recurrence_pattern"),
@@ -52,6 +54,7 @@ export const sentLog = sqliteTable(
     reminderId: text("reminder_id")
       .notNull()
       .references(() => reminders.id, { onDelete: "cascade" }),
+    channel: text("channel", { enum: ["sms", "telegram"] }).notNull().default("sms"),
     phoneNumber: text("phone_number").notNull(),
     status: text("status").notNull(), // "delivered" | "failed"
     errorCode: text("error_code"),

@@ -10,6 +10,8 @@ export interface SettingsContextType {
   setCalendarType: (type: CalendarType) => void;
   defaultPhoneNumber: string;
   setDefaultPhoneNumber: (phone: string) => void;
+  defaultTelegramChatId: string;
+  setDefaultTelegramChatId: (chatId: string) => void;
   isLoaded: boolean;
 }
 
@@ -18,11 +20,14 @@ const SettingsContext = React.createContext<SettingsContextType>({
   setCalendarType: () => {},
   defaultPhoneNumber: "",
   setDefaultPhoneNumber: () => {},
+  defaultTelegramChatId: "",
+  setDefaultTelegramChatId: () => {},
   isLoaded: false,
 });
 
 export const CALENDAR_STORAGE_KEY = "checkpoint_calendar_type";
 export const DEFAULT_PHONE_STORAGE_KEY = "checkpoint_default_phone";
+export const DEFAULT_TELEGRAM_STORAGE_KEY = "checkpoint_default_telegram_chat_id";
 
 export function SettingsProvider({
   children,
@@ -43,6 +48,7 @@ export function SettingsProvider({
 
   const [calendarType, setCalendarTypeState] = React.useState<CalendarType>(defaultCalendar);
   const [defaultPhoneNumber, setDefaultPhoneNumberState] = React.useState<string>("");
+  const [defaultTelegramChatId, setDefaultTelegramChatIdState] = React.useState<string>("");
   const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -58,6 +64,11 @@ export function SettingsProvider({
       if (savedPhone) {
         setDefaultPhoneNumberState(savedPhone);
       }
+
+      const savedTelegram = localStorage.getItem(DEFAULT_TELEGRAM_STORAGE_KEY);
+      if (savedTelegram) {
+        setDefaultTelegramChatIdState(savedTelegram);
+      }
     } catch {
       // localStorage might be unavailable
     } finally {
@@ -70,6 +81,9 @@ export function SettingsProvider({
       }
       if (e.key === DEFAULT_PHONE_STORAGE_KEY && e.newValue !== null) {
         setDefaultPhoneNumberState(e.newValue);
+      }
+      if (e.key === DEFAULT_TELEGRAM_STORAGE_KEY && e.newValue !== null) {
+        setDefaultTelegramChatIdState(e.newValue);
       }
     };
 
@@ -95,6 +109,15 @@ export function SettingsProvider({
     }
   }, []);
 
+  const setDefaultTelegramChatId = React.useCallback((chatId: string) => {
+    setDefaultTelegramChatIdState(chatId);
+    try {
+      localStorage.setItem(DEFAULT_TELEGRAM_STORAGE_KEY, chatId);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   return (
     <SettingsContext.Provider
       value={{
@@ -102,6 +125,8 @@ export function SettingsProvider({
         setCalendarType,
         defaultPhoneNumber,
         setDefaultPhoneNumber,
+        defaultTelegramChatId,
+        setDefaultTelegramChatId,
         isLoaded,
       }}
     >

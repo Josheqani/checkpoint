@@ -13,6 +13,7 @@ interface __BaseEnv_CloudflareEnv {
 	CRON_SECRET?: string;
 	SMSIR_API_KEY?: string;
 	SMSIR_LINE_NUMBER?: string | number;
+	TELEGRAM_BOT_TOKEN?: string;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {

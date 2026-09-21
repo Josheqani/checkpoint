@@ -79,6 +79,14 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       updatedAt: new Date(),
     };
 
+    if (parsed.data.channel !== undefined) {
+      updateData.channel = parsed.data.channel;
+    }
+
+    if (parsed.data.telegramChatId !== undefined) {
+      updateData.telegramChatId = parsed.data.telegramChatId;
+    }
+
     if (parsed.data.phoneNumber !== undefined) {
       updateData.phoneNumber = parsed.data.phoneNumber;
     }
