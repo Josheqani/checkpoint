@@ -209,5 +209,13 @@
     "phoneHint": "Iranian format: 09XXXXXXXXX. Stored only in your browser's local storage.",
     "saveButton": "Save Number",
     "privacyNote": "All settings are stored exclusively in your browser's local storage."
+  },
+  "pwa": {
+    "updateAvailable": "Update Available",
+    "updateDescription": "A new version of Checkpoint is ready. Update now to get the latest features and improvements.",
+    "updateNow": "Update Now",
+    "updating": "Updating...",
+    "later": "Later",
+    "updateReadyBadge": "Update Ready"
   }
 }

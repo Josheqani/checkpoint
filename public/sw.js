@@ -6,7 +6,7 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.3.0/workbox-sw.js');
 
 const CACHE_VERSION = 'v1';
-const OFFLINE_FALLBACK_URL = '/offline';
+const OFFLINE_FALLBACK_URL = '/offline.html';
 
 if (typeof workbox !== 'undefined') {
   console.log('[SW] Google Workbox initialized successfully');
@@ -18,9 +18,32 @@ if (typeof workbox !== 'undefined') {
     runtime: 'runtime',
   });
 
-  // Activate new worker immediately
-  workbox.core.skipWaiting();
+  // Listen for user action to skip waiting and activate new service worker
+  self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+      self.skipWaiting();
+    }
+  });
+
   workbox.core.clientsClaim();
+
+  // Clean up old cache versions upon activation
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((name) => {
+              return (
+                name.startsWith('checkpoint-') &&
+                !name.endsWith(`-${CACHE_VERSION}`)
+              );
+            })
+            .map((name) => caches.delete(name))
+        );
+      })
+    );
+  });
 
   // 1. Precache essential offline fallback page & core icons
   self.addEventListener('install', (event) => {
@@ -109,8 +132,13 @@ if (typeof workbox !== 'undefined') {
   });
 } else {
   // Graceful fallback if Workbox CDN is unreachable
+  self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+      self.skipWaiting();
+    }
+  });
+
   self.addEventListener('install', (event) => {
-    self.skipWaiting();
     event.waitUntil(
       caches.open(`checkpoint-fallback-${CACHE_VERSION}`).then((cache) => {
         return cache.addAll([OFFLINE_FALLBACK_URL]);
@@ -119,7 +147,23 @@ if (typeof workbox !== 'undefined') {
   });
 
   self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
+    event.waitUntil(
+      Promise.all([
+        clients.claim(),
+        caches.keys().then((cacheNames) => {
+          return Promise.all(
+            cacheNames
+              .filter((name) => {
+                return (
+                  name.startsWith('checkpoint-') &&
+                  !name.endsWith(`-${CACHE_VERSION}`)
+                );
+              })
+              .map((name) => caches.delete(name))
+          );
+        }),
+      ])
+    );
   });
 
   self.addEventListener('fetch', (event) => {
